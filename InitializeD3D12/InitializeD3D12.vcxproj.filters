@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{72977b79-abc4-4d62-8244-855e65f67b23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MiscCommon">
+      <UniqueIdentifier>{e116d82f-19b2-46ad-ad98-d03665c0daa0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\MiscCommon\GraphicWindow.cpp">
+      <Filter>MiscCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\WinMain.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\MiscCommon\GraphicWindow.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
