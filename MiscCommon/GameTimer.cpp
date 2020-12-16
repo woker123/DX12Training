@@ -37,7 +37,7 @@ void GameTimer::resume()
     mIsPause = false;
 }
 
-double GameTimer::totalTime() const
+double GameTimer::totalTimed() const
 {
     return (double)mElapsedCounter / (double)mPerformanceFrequency;
 }
@@ -47,7 +47,7 @@ double GameTimer::deltaTime() const
     return (double)mDeltaCounter / (double)mPerformanceFrequency;
 }
 
-void GameTimer::updata()
+void GameTimer::update()
 {
     if (mIsActive)
     {

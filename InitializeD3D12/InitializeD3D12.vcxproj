@@ -116,7 +116,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)MiscCommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -141,11 +141,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\MiscCommon\D3DApp.cpp" />
+    <ClCompile Include="..\MiscCommon\GameTimer.cpp" />
     <ClCompile Include="..\MiscCommon\GraphicWindow.cpp" />
+    <ClCompile Include="Source\InitD3DApp.cpp" />
     <ClCompile Include="Source\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\MiscCommon\D3DApp.h" />
+    <ClInclude Include="..\MiscCommon\d3dx12.h" />
+    <ClInclude Include="..\MiscCommon\DX12Exception.h" />
+    <ClInclude Include="..\MiscCommon\GameTimer.h" />
     <ClInclude Include="..\MiscCommon\GraphicWindow.h" />
+    <ClInclude Include="Source\InitD3DApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

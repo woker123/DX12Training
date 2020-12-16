@@ -34,13 +34,13 @@ public:
 	void resume();
 
 	/**get total elapsed time by this timer*/
-	double totalTime() const;
+	double totalTimed() const;
 
 	/**get delta time between two frame*/
 	double deltaTime() const;
 
 	/**update timer state, must be invoked every loop*/
-	void updata();
+	void update();
 
 private:
 	bool mIsActive;
