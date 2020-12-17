@@ -122,6 +122,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\MiscCommon\D3DApp.cpp" />
+    <ClCompile Include="..\MiscCommon\D3DUtil.cpp" />
     <ClCompile Include="..\MiscCommon\GameTimer.cpp" />
     <ClCompile Include="..\MiscCommon\GraphicWindow.cpp" />
     <ClCompile Include="Source\InitD3DApp.cpp" />
@@ -149,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\MiscCommon\D3DApp.h" />
+    <ClInclude Include="..\MiscCommon\D3DUtil.h" />
     <ClInclude Include="..\MiscCommon\d3dx12.h" />
     <ClInclude Include="..\MiscCommon\DX12Exception.h" />
     <ClInclude Include="..\MiscCommon\GameTimer.h" />
