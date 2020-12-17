@@ -21,8 +21,12 @@
     <ClCompile Include="..\MiscCommon\D3DApp.cpp">
       <Filter>MiscCommon</Filter>
     </ClCompile>
-    <ClCompile Include="Source\InitD3DApp.cpp" />
-    <ClCompile Include="..\MiscCommon\D3DUtil.cpp" />
+    <ClCompile Include="..\MiscCommon\D3DUtil.cpp">
+      <Filter>MiscCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\InitD3DApp.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\MiscCommon\GraphicWindow.h">
@@ -40,11 +44,11 @@
     <ClInclude Include="..\MiscCommon\D3DApp.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
-    <ClInclude Include="Source\InitD3DApp.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\MiscCommon\D3DUtil.h">
       <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\InitD3DApp.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

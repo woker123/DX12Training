@@ -14,6 +14,8 @@ public:
 		UINT64 byteSize,
 		Microsoft::WRL::ComPtr<ID3D12Resource>& uploadBuffer);
 
+	static UINT CalcConstantBufferByteSize(UINT byteSize);
+
 
 
 };

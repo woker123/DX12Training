@@ -2,22 +2,6 @@
 #include "d3dx12.h"
 #include <D3DUtil.h>
 
-bool InitD3DApp::InitializeApp(HINSTANCE hInstance)
-{
-	if (!D3DApp::InitializeApp(hInstance))
-		return false;
-
-	mCmdAllacator->Reset();
-	mCmdList->Reset(mCmdAllacator.Get(), nullptr);
-	InitializeVertexBuffer(mCmdList.Get());
-	mCmdList->Close();
-
-	mCmdQueue->ExecuteCommandLists(1, (ID3D12CommandList*const*)mCmdList.GetAddressOf());
-	FlushCommandQueue();
-
-	return true;
-}
-
 void InitD3DApp::Draw()
 {
 	D3DApp::Draw();
@@ -32,7 +16,7 @@ void InitD3DApp::Draw()
 	mCmdList->Reset(mCmdAllacator.Get(), nullptr);
 
 	mCmdList->RSSetViewports(1, &vp);
-	float color[4] = { 0.1, 0.5, 1.0, 1.0 };
+	float color[4] = { 0.1f, 0.5f, 1.0f, 1.0f };
 	ClearRTVAndDSV(mCmdList.Get(), color, 1.0, 0xff);
 	
 	mCmdList->Close();
@@ -60,9 +44,3 @@ void InitD3DApp::ClearRTVAndDSV(ID3D12GraphicsCommandList* cmdList, float color[
 		D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_DEPTH_READ));
 }
 
-void InitD3DApp::InitializeVertexBuffer(ID3D12GraphicsCommandList* cmdList)
-{
-	float vertices[][3] = { {-0.5f, -0.5f, 0.0f }, {0.0f, 0.5f, 0.0f}, {0.5f, 0.0f, 0.0f} };
-	mVertexBuffer = D3DUtil::CreateDefaultBuffer(mDevice.Get(), cmdList, vertices, sizeof(vertices), mUploadBuffer);
-
-}
