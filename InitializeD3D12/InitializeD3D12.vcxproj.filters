@@ -27,6 +27,9 @@
     <ClCompile Include="Source\InitD3DApp.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\MiscCommon\D3DInput.cpp">
+      <Filter>MiscCommon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\MiscCommon\GraphicWindow.h">
@@ -49,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="Source\InitD3DApp.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\D3DInput.h">
+      <Filter>MiscCommon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

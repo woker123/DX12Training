@@ -44,3 +44,14 @@ void InitD3DApp::ClearRTVAndDSV(ID3D12GraphicsCommandList* cmdList, float color[
 		D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_DEPTH_READ));
 }
 
+void InitD3DApp::OnKeyboardAxisEvent(KEY_TYPE key)
+{
+	
+}
+
+void InitD3DApp::OnKeyboardActionEvent(KEY_TYPE key, PRESS_STATE pState)
+{
+	if (key == KEY_TYPE::KEY_W)
+		OutputDebugStringA("hello\n");
+}
+

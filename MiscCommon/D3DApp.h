@@ -4,9 +4,11 @@
 #include <wrl/client.h>
 #include <dxgi.h>
 #include <d3d12.h>
+#include <memory>
 #include "GameTimer.h"
 #include "GraphicWindow.h"
-#include <memory>
+#include "InputHandler.h"
+
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -20,19 +22,24 @@ public:
 	D3DApp& operator=(const D3DApp&) = delete;
 
 public:
-	int Run();
-	void EnableDebugLayer();
-
 	void Set4xMSAA(bool msaaState);
 	bool Get4xMSAA();
 
 	virtual bool InitializeApp(HINSTANCE hInstance);
+	int Run();
+
+	virtual void OnKeyboardActionEvent(KEY_TYPE key, PRESS_STATE pState) {}
+	virtual void OnKeyboardAxisEvent(KEY_TYPE key) {}
+	virtual void OnMouseButtonActionEvent(MOUSE_BUTTON_TYPE mouseButton, PRESS_STATE pState) {}
+	virtual void OnMouseButtonAxisEvent(MOUSE_BUTTON_TYPE mouseButton) {}
+	virtual void OnMouseMove(float xPos, float yPos, float zPos, float xSpeed, float ySpeed, float zSpeed) {};
 
 protected:
 	virtual bool CreateRtvAndDsvHeap();
 	virtual void Update(float deltaTime);
 	virtual void Draw();
 	virtual void OnResize(int newWidth, int newHeight);
+
 
 protected:
 	bool InitializeMainWindow();
@@ -44,6 +51,7 @@ protected:
 	bool CreateFence();
 	bool CreateGlobalTimer();
 
+	void EnableDebugLayer();
 	void FlushCommandQueue();
 	int  getRTVDescriptorIncreaseSize();
 	int  getDSVDescriptorIncreaseSize();
@@ -69,11 +77,15 @@ protected:
 	HINSTANCE mHInstance;
 	std::shared_ptr<GraphicWindow> mMainWindow;
 	std::shared_ptr<GameTimer> mGlobalTimer;
+	int  mCurrentBackBuffer = 0;
+
+private:
 	bool m4xMsaaActive = false;
 	int  m4xMsaaQuality = 0;
 	bool mIsAppActive = true;
 	bool mIsAppMinimal = false;
-	int  mCurrentBackBuffer = 0;
+	
 	UINT64 mCurrentFenceValue = 0;
+	std::shared_ptr<InputHanler<D3DApp>> mInput;
 };
 

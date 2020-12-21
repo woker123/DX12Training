@@ -14,6 +14,10 @@ private:
 
 private:
 	void ClearRTVAndDSV(ID3D12GraphicsCommandList* cmdList,float color[4], float depth, unsigned char stencil);
+	virtual void OnKeyboardActionEvent(KEY_TYPE key, PRESS_STATE pState) override;
+	virtual void OnKeyboardAxisEvent(KEY_TYPE key) override;
+	
+
 
 private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> mUploadBuffer;

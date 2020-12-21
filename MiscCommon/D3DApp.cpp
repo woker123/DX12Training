@@ -63,6 +63,9 @@ bool D3DApp::InitializeApp(HINSTANCE hInstance)
 
     m4xMsaaQuality = queryMsaaQuality();
     mGlobalTimer->start();
+    mInput.reset(new InputHanler<D3DApp>(hInstance, mMainWindow->getHWND() ,this));
+    KEY_TYPE keys[4] = {KEY_TYPE::KEY_W, KEY_TYPE::KEY_A, KEY_TYPE::KEY_S, KEY_TYPE::KEY_D};
+    mInput->RegisterKeys(4, keys);
 
     return true;
 }
@@ -90,9 +93,7 @@ bool D3DApp::CreateRtvAndDsvHeap()
 void D3DApp::Update(float deltaTime)
 {
     mGlobalTimer->update();
-
-
-
+    mInput->Update((float)mGlobalTimer->deltaTime());
 }
 
 void D3DApp::Draw()
@@ -253,8 +254,12 @@ void D3DApp::FlushCommandQueue()
         HRESULT result =
         mFence->SetEventOnCompletion(mCurrentFenceValue, hEvent);
 
-        WaitForSingleObject(hEvent, INFINITE);
-        CloseHandle(hEvent);
+        if (hEvent)
+        {
+            WaitForSingleObject(hEvent, INFINITE);
+            CloseHandle(hEvent);
+        }
+        
     }
 }
 
@@ -293,3 +298,4 @@ int D3DApp::queryMsaaQuality()
 
     return queryData.NumQualityLevels;
 }
+

@@ -18,7 +18,6 @@ enum class KEY_TYPE
 	ADD_KEY(A),
 	ADD_KEY(S),
 	ADD_KEY(D)
-
 };
 
 //fixed, mouse button enumeration
