@@ -254,9 +254,6 @@ void BoxApp::Update(float deltaTime)
     DirectX::XMFLOAT4X4 invM;
     DirectX::XMStoreFloat4x4(&invM, invMat);
 
-    DirectX::XMFLOAT3 forwardVec = mCamera->GetForwardVector();
-    OutputDebugStringA((std::to_string(forwardVec.x) + "\t" + std::to_string(forwardVec.y) + "\t" + std::to_string(forwardVec.z) + "\n").data());
-
     mConstBuffer->CopyData(0, invM);
 }
 
@@ -269,7 +266,7 @@ void BoxApp::Draw()
 
     mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mBackBufferTextures[mCurrentBackBuffer].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
     mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mDepthStenceilTexture.Get(), D3D12_RESOURCE_STATE_DEPTH_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE));
-    float clearcolor[4] = { 1, 0, 1, 1 };
+    float clearcolor[4] = { 0.f, 0.f, 0.f, 1.f };
     mCmdList->ClearRenderTargetView(CurrentBackBufferRTV(), clearcolor, 0, nullptr);
     mCmdList->ClearDepthStencilView(currentDepthStencilDSV(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0, 0xff, 0, nullptr);
 

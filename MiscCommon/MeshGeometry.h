@@ -7,17 +7,17 @@
 #include <string>
 #include <unordered_map>
 
-struct SubMeshGeometry
+typedef struct SubMeshGeometry
 {
 	UINT indexCount;
 	UINT startIndexLocation;
 	UINT baseIndexLocation;
 	
 	DirectX::BoundingBox boundBox;
-};
+}SubMeshGeometry;
 
 
-struct MeshGeometry
+typedef struct MeshGeometry
 {
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexBuffer;
@@ -47,4 +47,4 @@ struct MeshGeometry
 	}
 
 	std::unordered_map<std::string, SubMeshGeometry> drawArgs;
-};
+}MeshGeometry;
