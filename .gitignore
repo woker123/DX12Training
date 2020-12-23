@@ -5,3 +5,7 @@ x64
 *.user
 *.ilk
 *.pdb
+/InitializeD3D12/*.ilk
+/InitializeD3D12/*.user
+/InitializeD3D12/*.pdb
+/Test_Console/*.user
