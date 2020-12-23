@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Windows.h>
+#define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #include <wrl.h>
 
@@ -17,7 +18,9 @@ enum class KEY_TYPE
 	ADD_KEY(W),
 	ADD_KEY(A),
 	ADD_KEY(S),
-	ADD_KEY(D)
+	ADD_KEY(D),
+	ADD_KEY(Q),
+	ADD_KEY(E)
 };
 
 //fixed, mouse button enumeration

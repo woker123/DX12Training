@@ -18,7 +18,7 @@ public:
 	InputHanler(HINSTANCE hInstance, HWND hwnd, T* t)
 		:mBindObj(t), mD3DInput(new D3DInput(hInstance, hwnd)) 
 	{
-		mD3DInput->detectInput(0.001);
+		mD3DInput->detectInput(0.001f);
 		InitMouseButtonState();
 	}
 	~InputHanler() {}

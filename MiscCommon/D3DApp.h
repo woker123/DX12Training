@@ -8,7 +8,7 @@
 #include "GameTimer.h"
 #include "GraphicWindow.h"
 #include "InputHandler.h"
-
+#include <string>
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -39,7 +39,7 @@ protected:
 	virtual void Update(float deltaTime);
 	virtual void Draw();
 	virtual void OnResize(int newWidth, int newHeight);
-
+	virtual std::wstring WindowTitile() { return L"Initialize D3D12"; }
 
 protected:
 	bool InitializeMainWindow();
@@ -56,7 +56,7 @@ protected:
 	int  getRTVDescriptorIncreaseSize();
 	int  getDSVDescriptorIncreaseSize();
 	void SwapBackBuffer();
-	D3D12_CPU_DESCRIPTOR_HANDLE currentBackBufferRTV();
+	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferRTV();
 	D3D12_CPU_DESCRIPTOR_HANDLE currentDepthStencilDSV();
 	int  queryMsaaQuality();
 
@@ -78,8 +78,6 @@ protected:
 	std::shared_ptr<GraphicWindow> mMainWindow;
 	std::shared_ptr<GameTimer> mGlobalTimer;
 	int  mCurrentBackBuffer = 0;
-
-private:
 	bool m4xMsaaActive = false;
 	int  m4xMsaaQuality = 0;
 	bool mIsAppActive = true;

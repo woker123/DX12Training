@@ -7,6 +7,9 @@
     <Filter Include="Source">
       <UniqueIdentifier>{11bde291-2cb9-4b48-900f-112c9d31a18b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{69a915f2-c58b-4b12-b31b-6aafa9f6133f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\MiscCommon\D3DApp.cpp">
@@ -59,5 +62,25 @@
     <ClInclude Include="..\MiscCommon\InputHandler.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\MiscCommon\D3DShader.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\UploadBuffer.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\MeshGeometry.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\Camera.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\base_vs.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\base_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

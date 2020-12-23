@@ -16,9 +16,12 @@ void InitD3DApp::Draw()
 	mCmdList->Reset(mCmdAllacator.Get(), nullptr);
 
 	mCmdList->RSSetViewports(1, &vp);
+	mCmdList->RSSetScissorRects(1, &CD3DX12_RECT(0, 0, mMainWindow->getWidth(), mMainWindow->getHeight()));
 	float color[4] = { 0.1f, 0.5f, 1.0f, 1.0f };
 	ClearRTVAndDSV(mCmdList.Get(), color, 1.0, 0xff);
-	
+	mCmdList->OMSetRenderTargets(1, &CurrentBackBufferRTV(), true, &currentDepthStencilDSV());
+
+
 	mCmdList->Close();
 	mCmdQueue->ExecuteCommandLists(1, (ID3D12CommandList*const*)mCmdList.GetAddressOf());
 	mDxgiSwapChain->Present(0, 0);  
@@ -32,7 +35,7 @@ void InitD3DApp::ClearRTVAndDSV(ID3D12GraphicsCommandList* cmdList, float color[
 	//clear rendertarget
 	mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mBackBufferTextures[mCurrentBackBuffer].Get(),
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
-	mCmdList->ClearRenderTargetView(currentBackBufferRTV(), color, 0, nullptr);
+	mCmdList->ClearRenderTargetView(CurrentBackBufferRTV(), color, 0, nullptr);
 	mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mBackBufferTextures[mCurrentBackBuffer].Get(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 

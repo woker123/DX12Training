@@ -19,7 +19,7 @@ D3DInput::~D3DInput()
 void D3DInput::detectInput(float deltaTime)
 {
 	//dubug only
-	assert(m_isDetectingInput = true && m_isDetectingInput);
+	m_isDetectingInput = true;
 
 	m_deltaTime = deltaTime;
 

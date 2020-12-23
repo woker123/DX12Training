@@ -64,8 +64,8 @@ bool D3DApp::InitializeApp(HINSTANCE hInstance)
     m4xMsaaQuality = queryMsaaQuality();
     mGlobalTimer->start();
     mInput.reset(new InputHanler<D3DApp>(hInstance, mMainWindow->getHWND() ,this));
-    KEY_TYPE keys[4] = {KEY_TYPE::KEY_W, KEY_TYPE::KEY_A, KEY_TYPE::KEY_S, KEY_TYPE::KEY_D};
-    mInput->RegisterKeys(4, keys);
+    KEY_TYPE keys[] = {KEY_TYPE::KEY_W, KEY_TYPE::KEY_A, KEY_TYPE::KEY_S, KEY_TYPE::KEY_D, KEY_TYPE::KEY_Q, KEY_TYPE::KEY_E};
+    mInput->RegisterKeys(sizeof(keys) / sizeof(keys[0]), keys);
 
     return true;
 }
@@ -106,7 +106,7 @@ void D3DApp::OnResize(int newWidth, int newHeight)
 
 bool D3DApp::InitializeMainWindow()
 {
-    mMainWindow.reset(new GraphicWindow(mHInstance, L"Initialize D3D12", 50, 50, 800, 800));
+    mMainWindow.reset(new GraphicWindow(mHInstance, WindowTitile().data(), 50, 50, 800, 800));
     return true;
 }
 
@@ -278,7 +278,7 @@ void D3DApp::SwapBackBuffer()
     mCurrentBackBuffer = mCurrentBackBuffer == 0 ? 1 : 0;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE D3DApp::currentBackBufferRTV()
+D3D12_CPU_DESCRIPTOR_HANDLE D3DApp::CurrentBackBufferRTV()
 {
     return CD3DX12_CPU_DESCRIPTOR_HANDLE(mBackBufferRtvHeap->GetCPUDescriptorHandleForHeapStart(), mCurrentBackBuffer, getRTVDescriptorIncreaseSize());
 }
