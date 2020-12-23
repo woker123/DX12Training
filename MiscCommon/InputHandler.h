@@ -25,7 +25,7 @@ public:
 
 public:
 	void Update(float deltaTime);
-	void RegisterKeys(int nKey, KEY_TYPE* keys);
+	void RegisterKeys(int nKey, DeviceInput::KEY_TYPE* keys);
 
 private:
 	//keyboard
@@ -44,18 +44,18 @@ private:
 
 private:
 	T* mBindObj;
-	std::shared_ptr<D3DInput> mD3DInput;
+	std::shared_ptr<DeviceInput::D3DInput> mD3DInput;
 
 private:
 	//keyboard
-	std::vector<KEY_TYPE> mKeyTypes;
-	std::vector<PRESS_STATE> mKeyBeforeState;
-	std::vector<PRESS_STATE> mKeyCurrentState;
+	std::vector<DeviceInput::KEY_TYPE> mKeyTypes;
+	std::vector<DeviceInput::PRESS_STATE> mKeyBeforeState;
+	std::vector<DeviceInput::PRESS_STATE> mKeyCurrentState;
 
 	//mouse
-	std::vector<MOUSE_BUTTON_TYPE> mMouseButtonTypes;
-	std::vector<PRESS_STATE> mButtonBeforeState;
-	std::vector<PRESS_STATE> mButtonCurrentState;
+	std::vector<DeviceInput::MOUSE_BUTTON_TYPE> mMouseButtonTypes;
+	std::vector<DeviceInput::PRESS_STATE> mButtonBeforeState;
+	std::vector<DeviceInput::PRESS_STATE> mButtonCurrentState;
 };
 
 template<class T>
@@ -70,7 +70,7 @@ inline void InputHanler<T>::Update(float deltaTime)
 }
 
 template<class T>
-inline void InputHanler<T>::RegisterKeys(int nKey, KEY_TYPE* keys)
+inline void InputHanler<T>::RegisterKeys(int nKey, DeviceInput::KEY_TYPE* keys)
 {
 	mKeyTypes.assign(keys, keys + nKey);
 	mKeyBeforeState.resize(nKey);
@@ -115,7 +115,7 @@ inline void InputHanler<T>::DispatchKeyAxisEvent()
 	SetKeyBeforeState();
 	for (int i = 0; i < (int)mKeyTypes.size(); ++i)
 	{
-		if (mKeyCurrentState[i] == PRESS_STATE::PRESS_DOWN)
+		if (mKeyCurrentState[i] == DeviceInput::PRESS_STATE::PRESS_DOWN)
 			mBindObj->OnKeyboardAxisEvent(mKeyTypes[i]);
 	}
 }
@@ -123,6 +123,7 @@ inline void InputHanler<T>::DispatchKeyAxisEvent()
 template<class T>
 inline void InputHanler<T>::InitMouseButtonState()
 {
+	using namespace DeviceInput;
 	mMouseButtonTypes.assign({ MOUSE_BUTTON_TYPE::BUTTON_LEFT, MOUSE_BUTTON_TYPE::BUTTON_RIGHT, MOUSE_BUTTON_TYPE::BUTTON_SCROLL });
 	mButtonBeforeState.resize(mMouseButtonTypes.size());
 	mButtonCurrentState.resize(mMouseButtonTypes.size());
@@ -165,7 +166,7 @@ inline void InputHanler<T>::DispatchMouseButtonAxisEvent()
 	SetMouseButtonBeforeState();
 	for (int i = 0; i < (int)mMouseButtonTypes.size(); ++i)
 	{
-		if (mButtonCurrentState[i] == PRESS_STATE::PRESS_DOWN)
+		if (mButtonCurrentState[i] == DeviceInput::PRESS_STATE::PRESS_DOWN)
 			mBindObj->OnMouseButtonAxisEvent(mMouseButtonTypes[i]);
 	}
 }
@@ -173,11 +174,11 @@ inline void InputHanler<T>::DispatchMouseButtonAxisEvent()
 template<class T>
 inline void InputHanler<T>::DispatchMouseMoveEvent()
 {
-	MouseXYZ mouseSpeed = mD3DInput->getMouseXYZSpeed();
+	DeviceInput::MouseXYZ mouseSpeed = mD3DInput->getMouseXYZSpeed();
 
 	if (std::abs(mouseSpeed.x) > 0.0 || std::abs(mouseSpeed.y) > 0.0 || std::abs(mouseSpeed.z) > 0.0)
 	{
-		MouseXYZ mousePos = mD3DInput->getMouseXYZPosition();
+		DeviceInput::MouseXYZ mousePos = mD3DInput->getMouseXYZPosition();
 		mBindObj->OnMouseMove(mousePos.x, mousePos.y, mousePos.z, mouseSpeed.x, mouseSpeed.y, mouseSpeed.z);
 	}
 }

@@ -1,7 +1,7 @@
 #include "D3DInput.h"
 #include <assert.h>
 
-
+using namespace DeviceInput;
 
 D3DInput::D3DInput(HINSTANCE hInstance, HWND hwnd)
 	:m_keyState{}, m_mouseState{}, m_isDetectingInput(false), m_deltaTime(0.0f)
