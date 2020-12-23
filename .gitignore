@@ -1,2 +1,7 @@
 .vs
 x64
+*.cso
+*.exe
+*.user
+*.ilk
+*.pdb
