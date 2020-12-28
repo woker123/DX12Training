@@ -74,6 +74,9 @@
     <ClInclude Include="..\MiscCommon\Camera.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\MiscCommon\GeometryGenerator.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\base_vs.hlsl">

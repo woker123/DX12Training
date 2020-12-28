@@ -158,6 +158,7 @@
     <ClInclude Include="..\MiscCommon\d3dx12.h" />
     <ClInclude Include="..\MiscCommon\DX12Exception.h" />
     <ClInclude Include="..\MiscCommon\GameTimer.h" />
+    <ClInclude Include="..\MiscCommon\GeometryGenerator.h" />
     <ClInclude Include="..\MiscCommon\GraphicWindow.h" />
     <ClInclude Include="..\MiscCommon\InputHandler.h" />
     <ClInclude Include="..\MiscCommon\MeshGeometry.h" />
