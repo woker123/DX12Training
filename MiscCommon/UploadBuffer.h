@@ -29,13 +29,13 @@ public:
 	
 	void CopyData(int elementIndex, const T& element)
 	{
-		T* dest = (T*)((char*)mMappedData + elementIndex * mElementByteSize);
+		T* dest = (T*)((char*)mMappedData + (UINT64)elementIndex * (UINT64)mElementByteSize);
 		*dest = element;
 	}
 
 	D3D12_GPU_VIRTUAL_ADDRESS GetElementGUPVirtualAddress(int eleIndex)
 	{
-		return mUploadBuffer->GetGPUVirtualAddress() + D3D12_GPU_VIRTUAL_ADDRESS((UINT)eleIndex * (UINT)mElementByteSize);
+		return mUploadBuffer->GetGPUVirtualAddress() + D3D12_GPU_VIRTUAL_ADDRESS((UINT64)eleIndex * (UINT64)mElementByteSize);
 	}
 
 	UINT GetElementSizeByte()

@@ -40,26 +40,25 @@ void BoxApp::OnKeyboardActionEvent(KEY_TYPE key, PRESS_STATE pState)
 
 void BoxApp::OnKeyboardAxisEvent(KEY_TYPE key)
 {
-    static float moveSpeed = 0.01f;
     switch (key)
     {
     case KEY_TYPE::KEY_W:
-        mCamera->MoveFoward(moveSpeed);
+        mCamera->MoveFoward(mMoveSpeed);
         break;
     case KEY_TYPE::KEY_A:
-        mCamera->MoveLeft(moveSpeed);
+        mCamera->MoveLeft(mMoveSpeed);
         break;
     case KEY_TYPE::KEY_S:
-        mCamera->MoveBack(moveSpeed);
+        mCamera->MoveBack(mMoveSpeed);
         break;
     case KEY_TYPE::KEY_D:
-        mCamera->MoveRight(moveSpeed);
+        mCamera->MoveRight(mMoveSpeed);
         break;
     case KEY_TYPE::KEY_Q:
-        mCamera->MoveDown(moveSpeed);
+        mCamera->MoveDown(mMoveSpeed);
         break;
     case KEY_TYPE::KEY_E:
-        mCamera->MoveUp(moveSpeed);
+        mCamera->MoveUp(mMoveSpeed);
         break;
     default:
         break;
@@ -77,7 +76,6 @@ void BoxApp::OnMouseButtonActionEvent(MOUSE_BUTTON_TYPE mouseButton, PRESS_STATE
 
 void BoxApp::OnMouseButtonAxisEvent(MOUSE_BUTTON_TYPE mouseButton)
 {
-   
 
 }
 
@@ -88,8 +86,17 @@ void BoxApp::OnMouseMove(float xPos, float yPos, float zPos, float xSpeed, float
         const float turnRate = 0.0001f;
         mCamera->TurnRight(xSpeed * turnRate);
         mCamera->TurnUp(ySpeed * turnRate);
+
+        if (zSpeed > 0.f)
+        {
+            mMoveSpeed *= 1.1f;
+        }
+        else if (zSpeed < 0.f)
+        {
+            mMoveSpeed *= 0.9f;
+        }
+
     }
-    
 
 }
 

@@ -9,9 +9,9 @@
 
 typedef struct SubMeshGeometry
 {
-	UINT indexCount;
-	UINT startIndexLocation;
-	UINT baseIndexLocation;
+	UINT indexCount{};
+	UINT startIndexLocation{};
+	UINT baseIndexLocation{};
 	
 	DirectX::BoundingBox boundBox;
 }SubMeshGeometry;

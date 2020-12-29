@@ -56,6 +56,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> mVertexBufferUpload;
 	Microsoft::WRL::ComPtr<ID3D12Resource> mIndexBufferUpload;
 
+	float mMoveSpeed = 0.01f;
 	std::shared_ptr<Camera> mCamera;
 	DirectX::XMFLOAT4X4 mMVPMatrix;
 	bool mMouseRightButtonDown = false;
