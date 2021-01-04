@@ -29,6 +29,21 @@ public:
 		return mPitch;
 	}
 
+	float GetNear() const
+	{
+		return mNear;
+	}
+
+	float GetFar() const
+	{
+		return mFar;
+	}
+
+	float GetAspect() const
+	{
+		return mAspect;
+	}
+
 	void SetLocation(const DirectX::XMFLOAT3& location)
 	{
 		mLocation = location;

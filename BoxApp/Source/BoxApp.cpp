@@ -235,16 +235,16 @@ bool BoxApp::BuildMesh()
     FlushCommandQueue();
 
     SubMeshGeometry subGeo = {};
-    subGeo.baseIndexLocation = 0;
+    subGeo.baseVertexLocation = 0;
     subGeo.indexCount = (UINT)indices.size();
     subGeo.startIndexLocation = 0;
 
     MeshGeometry meshGeo = {};
     meshGeo.drawArgs["Triangle"] = subGeo;
-    meshGeo.indexBuffer = indexBuffer;
+    meshGeo.IndexBufferGPU = indexBuffer;
     meshGeo.indexBufferFormat = DXGI_FORMAT_R16_UINT;
     meshGeo.indexBufferSize = (UINT)indices.size() * sizeof(UINT16);
-    meshGeo.vertexBuffer = vertexBuffer;
+    meshGeo.VertexBufferGPU = vertexBuffer;
     meshGeo.vertexBufferSize = (UINT)vertices.size() * sizeof(Vertex);
     meshGeo.vertexBufferStride = sizeof(Vertex);
     
@@ -271,7 +271,7 @@ void BoxApp::Draw()
     mCmdAllacator->Reset();
     mCmdList->Reset(mCmdAllacator.Get(), mPSO.Get());
 
-    mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mBackBufferTextures[mCurrentBackBuffer].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+    mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mBackBufferTextures[mCurrentBackBufferIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
     mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mDepthStenceilTexture.Get(), D3D12_RESOURCE_STATE_DEPTH_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE));
     float clearcolor[4] = { 0.f, 0.f, 0.f, 1.f };
     mCmdList->ClearRenderTargetView(CurrentBackBufferRTV(), clearcolor, 0, nullptr);
@@ -290,9 +290,9 @@ void BoxApp::Draw()
     mCmdList->SetGraphicsRootSignature(mRootSignature.Get());
     mCmdList->SetGraphicsRootDescriptorTable(0, mCBVHeap->GetGPUDescriptorHandleForHeapStart());
     SubMeshGeometry triangleArgs = mDrawMesh->drawArgs["Triangle"];
-    mCmdList->DrawIndexedInstanced(triangleArgs.indexCount, 1, triangleArgs.startIndexLocation, triangleArgs.baseIndexLocation, 0);
+    mCmdList->DrawIndexedInstanced(triangleArgs.indexCount, 1, triangleArgs.startIndexLocation, triangleArgs.baseVertexLocation, 0);
 
-    mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mBackBufferTextures[mCurrentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+    mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mBackBufferTextures[mCurrentBackBufferIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
     mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mDepthStenceilTexture.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_DEPTH_READ));  
     mCmdList->Close();
     mCmdQueue->ExecuteCommandLists(1, (ID3D12CommandList*const*)mCmdList.GetAddressOf());

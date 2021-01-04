@@ -34,7 +34,7 @@ public:
 	void resume();
 
 	/**get total elapsed time by this timer*/
-	double totalTimed() const;
+	double totalTime() const;
 
 	/**get delta time between two frame*/
 	double deltaTime() const;

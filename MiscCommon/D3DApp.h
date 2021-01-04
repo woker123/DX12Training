@@ -79,7 +79,7 @@ protected:
 	HINSTANCE mHInstance;
 	std::shared_ptr<GraphicWindow> mMainWindow;
 	std::shared_ptr<GameTimer> mGlobalTimer;
-	int  mCurrentBackBuffer = 0;
+	int  mCurrentBackBufferIndex = 0;
 	bool m4xMsaaActive = false;
 	int  m4xMsaaQuality = 0;
 	bool mIsAppActive = true;

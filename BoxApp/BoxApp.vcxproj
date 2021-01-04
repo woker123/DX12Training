@@ -24,6 +24,7 @@
     <ProjectGuid>{130c63a7-fad0-4ca8-b934-d75101b35f40}</ProjectGuid>
     <RootNamespace>BoxApp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>02-BoxApp</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

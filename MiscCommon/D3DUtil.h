@@ -16,7 +16,7 @@ public:
 
 	static UINT CalcConstantBufferByteSize(UINT byteSize);
 
-
+	static D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPSO();
 
 };
 

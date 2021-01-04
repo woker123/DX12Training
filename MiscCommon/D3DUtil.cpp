@@ -28,3 +28,22 @@ UINT D3DUtil::CalcConstantBufferByteSize(UINT byteSize)
 {
     return (byteSize + 255) & ~255;
 }
+
+D3D12_GRAPHICS_PIPELINE_STATE_DESC D3DUtil::CreateDefaultPSO()
+{
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+    psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+    psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+    psoDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
+    psoDesc.NodeMask = 0;
+    psoDesc.NumRenderTargets = 1;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    psoDesc.SampleDesc.Count = 1;
+    psoDesc.SampleDesc.Quality = 0;
+    psoDesc.SampleMask = UINT_MAX;
+
+    return psoDesc;
+}

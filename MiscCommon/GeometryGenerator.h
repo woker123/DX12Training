@@ -3,7 +3,6 @@
 #include <vector>
 #include <DirectXMath.h>
 #include <cmath>
-#include "FBXMeshImporter.h"
 
 using uint32 = std::uint32_t;
 using uint16 = std::uint16_t;
@@ -176,23 +175,6 @@ public:
 
 		return cylinderMesh;
 	}
-
-	static MeshData GenerateTeapot()
-	{
-		MeshData mesh;
-		FBXMeshImporter importer;
-		importer.importMesh("../FbxMesh/Teapot.fbx");
-		auto& verticesData = importer.getVertexData();
-		mesh.Vertices.resize(verticesData.size());
-		memcpy(mesh.Vertices.data(), verticesData.data(), mesh.Vertices.size() * sizeof(Vertex));
-		mesh.Indices32.resize(mesh.Vertices.size());
-		for (uint32 i = 0; i < mesh.Indices32.size(); ++i)
-		{
-			mesh.Indices32[i] = i;
-		}
-		return mesh;
-	}
-
 
 };
 

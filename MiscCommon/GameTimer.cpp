@@ -37,7 +37,7 @@ void GameTimer::resume()
     mIsPause = false;
 }
 
-double GameTimer::totalTimed() const
+double GameTimer::totalTime() const
 {
     return (double)mElapsedCounter / (double)mPerformanceFrequency;
 }

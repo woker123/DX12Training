@@ -54,6 +54,12 @@
     <ClInclude Include="Source\ShapeApp.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\FrameResource.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\RenderItem.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\MiscCommon\D3DApp.cpp">
@@ -77,5 +83,13 @@
     <ClCompile Include="Source\ShapeApp.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\base_vs.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\base_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

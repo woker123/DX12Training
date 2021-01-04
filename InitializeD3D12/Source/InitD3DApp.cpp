@@ -33,10 +33,10 @@ void InitD3DApp::Draw()
 void InitD3DApp::ClearRTVAndDSV(ID3D12GraphicsCommandList* cmdList, float color[4], float depth, unsigned char stencil)
 {
 	//clear rendertarget
-	mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mBackBufferTextures[mCurrentBackBuffer].Get(),
+	mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mBackBufferTextures[mCurrentBackBufferIndex].Get(),
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 	mCmdList->ClearRenderTargetView(CurrentBackBufferRTV(), color, 0, nullptr);
-	mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mBackBufferTextures[mCurrentBackBuffer].Get(),
+	mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mBackBufferTextures[mCurrentBackBufferIndex].Get(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
 	//clear depth stencil

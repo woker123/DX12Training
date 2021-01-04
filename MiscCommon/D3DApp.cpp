@@ -275,12 +275,12 @@ int D3DApp::getDSVDescriptorIncreaseSize()
 
 void D3DApp::SwapBackBuffer()
 {
-    mCurrentBackBuffer = mCurrentBackBuffer == 0 ? 1 : 0;
+    mCurrentBackBufferIndex = mCurrentBackBufferIndex == 0 ? 1 : 0;
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE D3DApp::CurrentBackBufferRTV()
 {
-    return CD3DX12_CPU_DESCRIPTOR_HANDLE(mBackBufferRtvHeap->GetCPUDescriptorHandleForHeapStart(), mCurrentBackBuffer, getRTVDescriptorIncreaseSize());
+    return CD3DX12_CPU_DESCRIPTOR_HANDLE(mBackBufferRtvHeap->GetCPUDescriptorHandleForHeapStart(), mCurrentBackBufferIndex, getRTVDescriptorIncreaseSize());
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE D3DApp::currentDepthStencilDSV()
