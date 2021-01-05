@@ -54,11 +54,11 @@
     <ClInclude Include="Source\ShapeApp.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\FrameResource.h">
-      <Filter>Source</Filter>
+    <ClInclude Include="..\MiscCommon\FrameResource.h">
+      <Filter>MiscCommon</Filter>
     </ClInclude>
-    <ClInclude Include="Source\RenderItem.h">
-      <Filter>Source</Filter>
+    <ClInclude Include="..\MiscCommon\RenderItem.h">
+      <Filter>MiscCommon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +82,9 @@
     </ClCompile>
     <ClCompile Include="Source\ShapeApp.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MiscCommon\GeometryGenerator.cpp">
+      <Filter>MiscCommon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -36,6 +36,7 @@ cbuffer PassBuffer : register(b0)
 cbuffer ObjectBuffer : register(b1)
 {
     float4x4 gModel;
+    float4x4 gInvModel;
 }
 
 VSOut main(VSInput vin)
@@ -43,8 +44,8 @@ VSOut main(VSInput vin)
     VSOut vout;
     float4x4 mvp = mul(gModel, gViewProj);
     vout.s_position = mul(float4(vin.position, 1), mvp);
-    vout.normal = mul(float4(vin.normal, 0), mvp).xyz;
-    vout.tangent = mul(float4(vin.tangent, 0), mvp).xyz;
+    vout.normal = mul(float4(vin.normal, 0), transpose(gInvModel)).xyz;
+    vout.tangent = mul(float4(vin.tangent, 0), transpose(gInvModel)).xyz;
     vout.texCoord = vin.texCoord;
     vout.position = mul(float4(vin.position, 1), gModel).xyz;
     

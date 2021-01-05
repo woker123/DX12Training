@@ -6,7 +6,7 @@ struct RenderItem
 {
 	DirectX::XMFLOAT4X4 ModelMat = DirectX::XMFLOAT4X4();
 	
-	INT NumFramesDirty = 0;
+	UINT NumFramesDirty = 0;
 
 	UINT ObjCBIndex = -1;
 

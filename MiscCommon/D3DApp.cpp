@@ -218,11 +218,11 @@ bool D3DApp::CreateRTVAndDSV()
             &dsvDesc,
             D3D12_RESOURCE_STATE_DEPTH_READ,
             &CD3DX12_CLEAR_VALUE(DXGI_FORMAT_D32_FLOAT_S8X24_UINT, 1.0, 0xff),
-            IID_PPV_ARGS(&mDepthStenceilTexture)
+            IID_PPV_ARGS(&mDepthStencilTexture)
         );
 
     if (FAILED(result)) return false;
-    mDevice->CreateDepthStencilView(mDepthStenceilTexture.Get(), nullptr, CD3DX12_CPU_DESCRIPTOR_HANDLE(mDepthStencilDsvHeap->GetCPUDescriptorHandleForHeapStart()));
+    mDevice->CreateDepthStencilView(mDepthStencilTexture.Get(), nullptr, CD3DX12_CPU_DESCRIPTOR_HANDLE(mDepthStencilDsvHeap->GetCPUDescriptorHandleForHeapStart()));
 
     return true;
 }

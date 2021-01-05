@@ -28,7 +28,7 @@ private:
 	bool InitCamera();
 	void UpdateObjectCB();
 	void UpdatePassCB();
-	void DrawItems(ID3D12GraphicsCommandList* cmdList, std::vector<RenderItem>& renderItems);
+	void DrawItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem>& renderItems);
 
 private:
 	virtual void Update(float deltaTime);
@@ -58,12 +58,12 @@ private:
 
 	std::vector<FrameResource> mFrameResources;
 	int mNumFrameResources = 3;
-	int mCurFrameResourceIndex = 0;
+	int mCurFrameResourceIndex = -1;
 	FrameResource* mCurFrameResource = nullptr;
 	int mCBVDescriptorSize = 0;
 
 	std::vector<RenderItem> mOpaqueRenderItems;
-	int mNumRenderItems = 1;
+	int mNumRenderItems = 2;
 	
 	std::shared_ptr<MeshGeometry> mMeshGeo;
 	float mMoveSpeed = 0.01f;

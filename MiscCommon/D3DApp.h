@@ -73,7 +73,7 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mDepthStencilDsvHeap;
 	Microsoft::WRL::ComPtr<ID3D12Fence> mFence;
 	Microsoft::WRL::ComPtr<ID3D12Resource> mBackBufferTextures[2];
-	Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStenceilTexture;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStencilTexture;
 
 protected:
 	HINSTANCE mHInstance;

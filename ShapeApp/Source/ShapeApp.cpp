@@ -60,11 +60,11 @@ bool ShapeApp::BuildFrameResources()
 bool ShapeApp::BuildCBVs()
 {
 	UINT objCBSize = D3DUtil::CalcConstantBufferByteSize(sizeof(ObjectConstant));
-	auto objCBVHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mCbvHeap->GetCPUDescriptorHandleForHeapStart());
 	for (int frameIndex = 0; frameIndex < mNumFrameResources; ++frameIndex)
 	{
 		for (int objIndex = 0; objIndex < mNumRenderItems; ++objIndex)
 		{
+			auto objCBVHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mCbvHeap->GetCPUDescriptorHandleForHeapStart());
 			UINT objCBVIndex = frameIndex * mNumRenderItems + objIndex;
 			objCBVHandle.Offset(objCBVIndex, mCBVDescriptorSize);
 			D3D12_GPU_VIRTUAL_ADDRESS objCBVAdress = mFrameResources[frameIndex].ObjectCB->GetElementGUPVirtualAddress(objIndex);
@@ -93,14 +93,14 @@ bool ShapeApp::BuildCBVs()
 
 bool ShapeApp::BuildMeshGeometry()
 {
-	auto cylinderMesh = GeometryGenerator::GenerateCylinder(1.f, 2.f, 3.f, 32, 32);
+	auto cylinderMesh = GeometryGenerator::GenerateSphere(2.f, 32, 32);
 	UINT cylinderVertexOffset = 0;
 	UINT cylinderIndexOffset = 0;
 	
-	SubMeshGeometry cylinderSubGeo;
-	cylinderSubGeo.baseVertexLocation = 0;
-	cylinderSubGeo.indexCount = (UINT)cylinderMesh.Indices32.size();
-	cylinderSubGeo.startIndexLocation = 0;
+	SubMeshGeometry cylinderSubGeo1;
+	cylinderSubGeo1.baseVertexLocation = 0;
+	cylinderSubGeo1.indexCount = (UINT)cylinderMesh.Indices32.size();
+	cylinderSubGeo1.startIndexLocation = 0;
 
 	mMeshGeo.reset(new MeshGeometry);
 	
@@ -119,13 +119,14 @@ bool ShapeApp::BuildMeshGeometry()
 	mMeshGeo->Name = "Shape";
 	mMeshGeo->vertexBufferSize = (UINT)cylinderMesh.Vertices.size() * sizeof(Vertex);
 	mMeshGeo->vertexBufferStride = sizeof(Vertex);
-	mMeshGeo->drawArgs["Cylinder"] = cylinderSubGeo;
+	mMeshGeo->drawArgs["Cylinder"] = cylinderSubGeo1;
 
 	return true;
 }
 
 bool ShapeApp::BuildRenderItems()
 {
+	std::vector<DirectX::XMFLOAT3> locations = { {0, 0, 0}, {10, 0, 0} };;
 	for (int i = 0; i < mNumRenderItems; ++i)
 	{
 		RenderItem rItem;
@@ -134,7 +135,7 @@ bool ShapeApp::BuildRenderItems()
 		rItem.DrawStartIndex = mMeshGeo->drawArgs["Cylinder"].startIndexLocation;
 		rItem.GeoMesh = mMeshGeo.get();
 		rItem.PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-		DirectX::XMMATRIX model = DirectX::XMMatrixIdentity();
+		DirectX::XMMATRIX model = DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&locations[i]));
 		DirectX::XMStoreFloat4x4(&rItem.ModelMat, model);
 		rItem.NumFramesDirty = mNumFrameResources;
 		rItem.ObjCBIndex = i;
@@ -156,16 +157,16 @@ void ShapeApp::UpdateObjectCB()
 	{
 		if (mOpaqueRenderItems[i].NumFramesDirty > 0)
 		{
-			for (int frameIndex = 0; frameIndex < mNumFrameResources; ++frameIndex)
-			{
-				ObjectConstant objConst = {};
-				objConst.Model = mOpaqueRenderItems[i].ModelMat;
-				DirectX::XMMATRIX modelMat = DirectX::XMLoadFloat4x4(&objConst.Model);
-				modelMat = DirectX::XMMatrixTranspose(modelMat);
-				DirectX::XMStoreFloat4x4(&objConst.Model, modelMat);
-				mFrameResources[frameIndex].ObjectCB->CopyData(i, objConst);
-				--mOpaqueRenderItems[i].NumFramesDirty;
-			}
+			ObjectConstant objConst = {};
+			objConst.Model = mOpaqueRenderItems[i].ModelMat;
+			DirectX::XMMATRIX modelMat = DirectX::XMLoadFloat4x4(&objConst.Model);
+			DirectX::XMMATRIX invModelMat = DirectX::XMMatrixInverse(&DirectX::XMMatrixDeterminant(modelMat), modelMat);
+			modelMat = DirectX::XMMatrixTranspose(modelMat);
+			invModelMat = DirectX::XMMatrixTranspose(invModelMat);
+			DirectX::XMStoreFloat4x4(&objConst.Model, modelMat);
+			DirectX::XMStoreFloat4x4(&objConst.InvModel, invModelMat);
+			mCurFrameResource->ObjectCB->CopyData(i, objConst);
+			--mOpaqueRenderItems[i].NumFramesDirty;
 		}
 	}
 }
@@ -207,13 +208,14 @@ void ShapeApp::UpdatePassCB()
 	mCurFrameResource->PassCB->CopyData(0, passConst);
 }
 
-void ShapeApp::DrawItems(ID3D12GraphicsCommandList* cmdList, std::vector<RenderItem>& renderItems)
+void ShapeApp::DrawItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem>& renderItems)
 {
-	UINT objCBVIndex = mCurFrameResourceIndex * (UINT)renderItems.size();
+	UINT objCBVIndex = 0;
 	for (int i = 0; i < renderItems.size(); ++i)
 	{
+		objCBVIndex = mCurFrameResourceIndex * mNumRenderItems + i;
 		auto cbvHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvHeap->GetGPUDescriptorHandleForHeapStart());
-		cbvHandle.Offset(objCBVIndex + i, mCBVDescriptorSize);
+		cbvHandle.Offset(objCBVIndex, mCBVDescriptorSize);
 		cmdList->SetGraphicsRootDescriptorTable(1, cbvHandle);
 
 		cmdList->IASetVertexBuffers(0, 1, &renderItems[i].GeoMesh->vertexBufferView());
@@ -231,10 +233,10 @@ bool ShapeApp::BuildDescriptorHeap()
 	dhd.NodeMask = 0;
 	dhd.NumDescriptors = mNumFrameResources * (mNumRenderItems + 1);
 	dhd.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	mCBVDescriptorSize = mDevice->GetDescriptorHandleIncrementSize(dhd.Type);
 
 	HRESULT result =
 	mDevice->CreateDescriptorHeap(&dhd, IID_PPV_ARGS(&mCbvHeap));
+	mCBVDescriptorSize = mDevice->GetDescriptorHandleIncrementSize(dhd.Type);
 	return SUCCEEDED(result);
 }
 
@@ -288,6 +290,8 @@ bool ShapeApp::BuildPSO()
 	psoDesc.InputLayout = inputDesc;
 	psoDesc.SampleDesc.Count = m4xMsaaActive ? 4 : 1;
 	psoDesc.SampleDesc.Quality = m4xMsaaActive ? queryMsaaQuality() - 1 : 0;
+	//psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	//psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 
 	HRESULT result = mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mOpaquePSO));
 	return SUCCEEDED(result);
@@ -296,48 +300,54 @@ bool ShapeApp::BuildPSO()
 void ShapeApp::Update(float deltaTime)
 {
 	D3DApp::Update(deltaTime);
+	mCurFrameResourceIndex = (mCurFrameResourceIndex + 1) % mNumFrameResources;
+	mCurFrameResource = &mFrameResources[mCurFrameResourceIndex];
 
+	if (mCurFrameResource->FenceValue != 0 && mFence->GetCompletedValue() < mCurFrameResource->FenceValue)
+	{
+		HANDLE hEvent = CreateEventEx(nullptr, nullptr, 0, EVENT_ALL_ACCESS);
+		mFence->SetEventOnCompletion(mCurFrameResource->FenceValue, hEvent);
+		if (hEvent)
+		{
+			WaitForSingleObject(hEvent, INFINITE);
+			CloseHandle(hEvent);
+		}	
+	}
 
-
-
-
+	UpdatePassCB();
+	UpdateObjectCB();
 }
 
 void ShapeApp::Draw()
 {
 	D3DApp::Draw();
+	mCurFrameResource->CmdAlloc->Reset();
+	mCmdList->Reset(mCurFrameResource->CmdAlloc.Get(), mOpaquePSO.Get());
 
-	mCmdAllacator->Reset();
-	mCmdList->Reset(mCmdAllacator.Get(), mOpaquePSO.Get());
-
+	CmdListOpenRtvAndDsv(mCmdList.Get(), mBackBufferTextures[mCurrentBackBufferIndex].Get(), mDepthStencilTexture.Get());
 	CmdListSetVptAndSciRct(mCmdList.Get());
-	CmdListOpenRtvAndDsv(mCmdList.Get(), mBackBufferTextures[mCurrentBackBufferIndex].Get(), mDepthStenceilTexture.Get());
-	float clearColor[4] = { 1.f, 1.f, 0.5f, 1.f };
-	CmdListClearRtvAndDsv(mCmdList.Get(), CurrentBackBufferRTV(), currentDepthStencilDSV(), clearColor, 1.f, 0x00);
+	float clearColor[4] = {1, 1, 1, 1};
+	CmdListClearRtvAndDsv(mCmdList.Get(), CurrentBackBufferRTV(), currentDepthStencilDSV(), clearColor, 1.f, 0xff);
 	mCmdList->OMSetRenderTargets(1, &CurrentBackBufferRTV(), true, &currentDepthStencilDSV());
-	
-	mCurFrameResource = &mFrameResources[mCurFrameResourceIndex];
-	
+
 	mCmdList->SetGraphicsRootSignature(mRootSig.Get());
-	mCmdList->SetDescriptorHeaps(0, (ID3D12DescriptorHeap*const*)mCbvHeap.GetAddressOf());
 	mCmdList->SetDescriptorHeaps(1, (ID3D12DescriptorHeap*const*)mCbvHeap.GetAddressOf());
 	UINT cbvIndex = mNumFrameResources * mNumRenderItems + mCurFrameResourceIndex;
 	auto cbvHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvHeap->GetGPUDescriptorHandleForHeapStart());
 	cbvHandle.Offset(cbvIndex, mCBVDescriptorSize);
 	mCmdList->SetGraphicsRootDescriptorTable(0, cbvHandle);
-	
-	UpdatePassCB();
-	UpdateObjectCB();
+
 	DrawItems(mCmdList.Get(), mOpaqueRenderItems);
 
-	
-	CmdListCloseRtvAndDsv(mCmdList.Get(), mBackBufferTextures[mCurrentBackBufferIndex].Get(), mDepthStenceilTexture.Get());
+	CmdListCloseRtvAndDsv(mCmdList.Get(), mBackBufferTextures[mCurrentBackBufferIndex].Get(), mDepthStencilTexture.Get());
 	mCmdList->Close();
-	
 	mCmdQueue->ExecuteCommandLists(1, (ID3D12CommandList*const*)mCmdList.GetAddressOf());
-	FlushCommandQueue();
+
 	mDxgiSwapChain->Present(0, 0);
 	SwapBackBuffer();
+
+	mCurFrameResource->FenceValue = ++mCurrentFenceValue;
+	mCmdQueue->Signal(mFence.Get(), mCurrentFenceValue);
 }
 
 void ShapeApp::OnKeyboardAxisEvent(KEY_TYPE key)

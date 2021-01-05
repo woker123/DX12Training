@@ -27,6 +27,7 @@ struct PassConstant
 struct ObjectConstant
 {
 	DirectX::XMFLOAT4X4 Model;
+	DirectX::XMFLOAT4X4 InvModel;
 };
 
 struct FrameResource

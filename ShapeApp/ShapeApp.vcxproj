@@ -149,14 +149,14 @@
     <ClInclude Include="..\MiscCommon\D3DUtil.h" />
     <ClInclude Include="..\MiscCommon\d3dx12.h" />
     <ClInclude Include="..\MiscCommon\DX12Exception.h" />
+    <ClInclude Include="..\MiscCommon\FrameResource.h" />
     <ClInclude Include="..\MiscCommon\GameTimer.h" />
     <ClInclude Include="..\MiscCommon\GeometryGenerator.h" />
     <ClInclude Include="..\MiscCommon\GraphicWindow.h" />
     <ClInclude Include="..\MiscCommon\InputHandler.h" />
     <ClInclude Include="..\MiscCommon\MeshGeometry.h" />
+    <ClInclude Include="..\MiscCommon\RenderItem.h" />
     <ClInclude Include="..\MiscCommon\UploadBuffer.h" />
-    <ClInclude Include="Source\FrameResource.h" />
-    <ClInclude Include="Source\RenderItem.h" />
     <ClInclude Include="Source\ShapeApp.h" />
   </ItemGroup>
   <ItemGroup>
@@ -164,6 +164,7 @@
     <ClCompile Include="..\MiscCommon\D3DInput.cpp" />
     <ClCompile Include="..\MiscCommon\D3DUtil.cpp" />
     <ClCompile Include="..\MiscCommon\GameTimer.cpp" />
+    <ClCompile Include="..\MiscCommon\GeometryGenerator.cpp" />
     <ClCompile Include="..\MiscCommon\GraphicWindow.cpp" />
     <ClCompile Include="Source\ShapeApp.cpp" />
     <ClCompile Include="Source\WinMain.cpp" />
