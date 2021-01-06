@@ -3,7 +3,7 @@
 #include <memory>
 #include <assert.h>
 
-UINT WINAPI wWinMain(
+INT WINAPI wWinMain(
 	_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR lpCmdLine,
