@@ -8,7 +8,7 @@ struct RenderItem
 	
 	UINT NumFramesDirty = 0;
 
-	UINT ObjCBIndex = -1;
+	UINT ObjCBIndex = 0;
 
 	MeshGeometry* GeoMesh = nullptr;
 

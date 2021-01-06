@@ -10,5 +10,5 @@ struct PSIn
 
 float4 main(PSIn pin) : SV_Target
 {
-    return float4(normalize(pin.normal), 1);
+    return float4(pin.texCoord, 0, 1);
 }

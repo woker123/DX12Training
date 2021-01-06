@@ -6,28 +6,98 @@ MeshData GeometryGenerator::GenerateBox(float xSize, float ySize, float zSize, i
 	float halfX = xSize * 0.5f;
 	float halfY = ySize * 0.5f;
 	float halfZ = zSize * 0.5f;
+	DirectX::XMFLOAT2 tex[4] = { {0.f, 0.f}, {1.f, 0.f}, {1.f, 1.f}, {0.f, 1.f} };
 
 	//negative-y
 	Vertex vert[4] = {};
-	vert[0].Position = { -halfX, -halfY, halfZ };
-	vert[0].Texture = { 0.25f, 1.f / 3.f };
-	vert[1].Position = { -halfX, -halfY, -halfZ };
-	vert[1].Texture = {0.25f, 2.f / 3.f};
-	vert[2].Position = { halfX, -halfY, -halfZ};
-	vert[2].Texture = {0.5f, 2.f / 3.f};
-	vert[3].Position = { halfX, -halfY, halfZ};
-	vert[3].Texture = {0.5f, 1.f / 3.f};
+	vert[0].Position = {halfX, -halfY, halfZ};
+	vert[1].Position = {-halfX, -halfY, halfZ};
+	vert[2].Position = {-halfX, -halfY, -halfZ};
+	vert[3].Position = {halfX, -halfY, -halfZ};
 	for (int i = 0; i < 4; ++i)
 	{
-		vert[i].Normal = {0.f, -1.f, 0.f};
-		vert[i].Tangent = {1.f, 0.f, 0.f};
+		vert[i].Normal = { 0.f, -1.f, 0.f };
+		vert[i].Tangent = { -1.f, 0.f, 0.f };
+		vert[i].Texture = tex[i];
+		boxMesh.Vertices.push_back(vert[i]);
 	}
 
+	//positive-y
+	vert[0].Position = { -halfX, halfY, halfZ };
+	vert[1].Position = { halfX, halfY, halfZ };
+	vert[2].Position = { halfX, halfY, -halfZ };
+	vert[3].Position = { -halfX, halfY, -halfZ };
+	for (int i = 0; i < 4; ++i)
+	{
+		vert[i].Normal = { 0.f, 1.f, 0.f };
+		vert[i].Tangent = { 1.f, 0.f, 0.f };
+		vert[i].Texture = tex[i];
+		boxMesh.Vertices.push_back(vert[i]);
+	}
 
+	//negative-x
+	vert[0].Position = { -halfX, -halfY, halfZ };
+	vert[1].Position = { -halfX, halfY, halfZ };
+	vert[2].Position = { -halfX, halfY, -halfZ };
+	vert[3].Position = { -halfX, -halfY, -halfZ };
+	for (int i = 0; i < 4; ++i)
+	{
+		vert[i].Normal = { -1.f, 0.f, 0.f };
+		vert[i].Tangent = { 0.f, 1.f, 0.f };
+		vert[i].Texture = tex[i];
+		boxMesh.Vertices.push_back(vert[i]);
+	}
 
+	//positive-x
+	vert[0].Position = { halfX, halfY, -halfZ };
+	vert[1].Position = { halfX, halfY, halfZ };
+	vert[2].Position = { halfX, -halfY, halfZ };
+	vert[3].Position = { halfX, -halfY, -halfZ };
+	for (int i = 0; i < 4; ++i)
+	{
+		vert[i].Normal = { 1.f, 0.f, 0.f };
+		vert[i].Tangent = { 0.f, 0.f, 1.f };
+		vert[i].Texture = tex[i];
+		boxMesh.Vertices.push_back(vert[i]);
+	}
 
+	//negative-z
+	vert[0].Position = { -halfX, halfY, -halfZ };
+	vert[1].Position = { halfX, halfY, -halfZ };
+	vert[2].Position = { halfX, -halfY, -halfZ };
+	vert[3].Position = { -halfX, -halfY, -halfZ };
+	for (int i = 0; i < 4; ++i)
+	{
+		vert[i].Normal = { 0.f, 0.f, -1.f };
+		vert[i].Tangent = { 1.f, 0.f, 0.f };
+		vert[i].Texture = tex[i];
+		boxMesh.Vertices.push_back(vert[i]);
+	}
+
+	//positive-z
+	vert[0].Position = { halfX, halfY, halfZ };
+	vert[1].Position = { -halfX, halfY, halfZ };
+	vert[2].Position = { -halfX, -halfY, halfZ };
+	vert[3].Position = { halfX, -halfY, halfZ };
+	for (int i = 0; i < 4; ++i)
+	{
+		vert[i].Normal = {0.f, 0.f, 1.f};
+		vert[i].Tangent = {-1.f, 0.f, 0.f};
+		vert[i].Texture = tex[i];
+		boxMesh.Vertices.push_back(vert[i]);
+	}
+
+	//generate indices
+	for (int i = 0; i < 6; ++i)
+	{
+		boxMesh.Indices32.push_back(4 * i);
+		boxMesh.Indices32.push_back(4 * i + 1);
+		boxMesh.Indices32.push_back(4 * i + 3);
+		boxMesh.Indices32.push_back(4 * i + 3);
+		boxMesh.Indices32.push_back(4 * i + 1);
+		boxMesh.Indices32.push_back(4 * i + 2);
+	}
 	return boxMesh;
-
 }
 
 void GeometryGenerator::BuildCylinderLateral(MeshData& meshData, float bottomRadius, float topRadius, float height, int sliceCount, int stackCount)
@@ -97,8 +167,7 @@ void GeometryGenerator::BuildCylinderTopCap(MeshData& meshData, float bottomRadi
 		vert.Position = { topRadius * std::cos(theta), halfHeight, topRadius * std::sin(theta) };
 		vert.Normal = { 0.f, 1.f, 0.f };
 		vert.Tangent = { 1.f, 0.f, 0.f };
-		//vert.Texture = { vert.Position.x / (2.f * topRadius) + 0.5F, 0.5F - vert.Position.z / (2.f * topRadius) };
-		vert.Texture = {(float)i / (float)sliceCount, 1.f};
+		vert.Texture = { vert.Position.x / (2.f * topRadius) + 0.5F, 0.5F - vert.Position.z / (2.f * topRadius) };
 		meshData.Vertices.push_back(vert);
 		theta -= deltaTheta;
 	}
@@ -126,8 +195,7 @@ void GeometryGenerator::BuildCylinderBottomCap(MeshData& meshData, float bottomR
 		vert.Position = { bottomRadius * std::cos(theta), -halfHeight, bottomRadius * std::sin(theta) };
 		vert.Normal = { 0.f, -1.f, 0.f };
 		vert.Tangent = { 1.f, 0.f, 0.f };
-		//vert.Texture = { vert.Position.x / (2.f * bottomRadius) + 0.5f, 0.5f - vert.Position.z / (2.f * bottomRadius) };
-		vert.Texture = { (float)i / (float)sliceCount, 1.f };
+		vert.Texture = { vert.Position.x / (2.f * bottomRadius) + 0.5f, 0.5f - vert.Position.z / (2.f * bottomRadius) };
 		meshData.Vertices.push_back(vert);
 		theta += deltaTheta;
 	}

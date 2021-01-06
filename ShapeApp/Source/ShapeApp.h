@@ -63,7 +63,6 @@ private:
 	int mCBVDescriptorSize = 0;
 
 	std::vector<RenderItem> mOpaqueRenderItems;
-	int mNumRenderItems = 2;
 	
 	std::shared_ptr<MeshGeometry> mMeshGeo;
 	float mMoveSpeed = 0.01f;

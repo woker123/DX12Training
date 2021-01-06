@@ -22,6 +22,12 @@ bool ShapeApp::InitializeApp(HINSTANCE hInstance)
 	if (!BuildPSO())
 		return false;
 
+	if (!BuildMeshGeometry())
+		return false;
+
+	if (!BuildRenderItems())
+		return false;
+
 	if (!BuildDescriptorHeap())
 		return false;
 
@@ -29,12 +35,6 @@ bool ShapeApp::InitializeApp(HINSTANCE hInstance)
 		return false;
 
 	if (!BuildCBVs())
-		return false;
-
-	if (!BuildMeshGeometry())
-		return false;
-
-	if (!BuildRenderItems())
 		return false;
 	
 	if (!InitCamera())
@@ -51,7 +51,7 @@ bool ShapeApp::BuildFrameResources()
 {
 	for (int i = 0; i < mNumFrameResources; ++i)
 	{
-		mFrameResources.push_back(FrameResource(mDevice.Get(), 1, mNumRenderItems));
+		mFrameResources.push_back(FrameResource(mDevice.Get(), 1, (UINT)mOpaqueRenderItems.size()));
 	}
 
 	return true;
@@ -62,10 +62,10 @@ bool ShapeApp::BuildCBVs()
 	UINT objCBSize = D3DUtil::CalcConstantBufferByteSize(sizeof(ObjectConstant));
 	for (int frameIndex = 0; frameIndex < mNumFrameResources; ++frameIndex)
 	{
-		for (int objIndex = 0; objIndex < mNumRenderItems; ++objIndex)
+		for (int objIndex = 0; objIndex < mOpaqueRenderItems.size(); ++objIndex)
 		{
 			auto objCBVHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mCbvHeap->GetCPUDescriptorHandleForHeapStart());
-			UINT objCBVIndex = frameIndex * mNumRenderItems + objIndex;
+			UINT objCBVIndex = frameIndex * (UINT)mOpaqueRenderItems.size() + objIndex;
 			objCBVHandle.Offset(objCBVIndex, mCBVDescriptorSize);
 			D3D12_GPU_VIRTUAL_ADDRESS objCBVAdress = mFrameResources[frameIndex].ObjectCB->GetElementGUPVirtualAddress(objIndex);
 			D3D12_CONSTANT_BUFFER_VIEW_DESC cbvd = {};
@@ -75,7 +75,7 @@ bool ShapeApp::BuildCBVs()
 		}
 	}
 
-	UINT passCBVIndex = mNumFrameResources * mNumRenderItems;
+	UINT passCBVIndex = mNumFrameResources * (UINT)mOpaqueRenderItems.size();
 	for (int frameIndex = 0; frameIndex < mNumFrameResources; ++frameIndex)
 	{
 		UINT cbvIndex = passCBVIndex + frameIndex;
@@ -93,53 +93,142 @@ bool ShapeApp::BuildCBVs()
 
 bool ShapeApp::BuildMeshGeometry()
 {
-	auto cylinderMesh = GeometryGenerator::GenerateSphere(2.f, 32, 32);
-	UINT cylinderVertexOffset = 0;
-	UINT cylinderIndexOffset = 0;
-	
-	SubMeshGeometry cylinderSubGeo1;
-	cylinderSubGeo1.baseVertexLocation = 0;
-	cylinderSubGeo1.indexCount = (UINT)cylinderMesh.Indices32.size();
-	cylinderSubGeo1.startIndexLocation = 0;
+	//generate mesh data
+	auto boxMesh = GeometryGenerator::GenerateBox(60.f, 4.f, 50.f);
+	auto cylinderMesh = GeometryGenerator::GenerateCylinder(2.f, 1.f, 20.f, 16, 16);
+	auto sphereMesh = GeometryGenerator::GenerateSphere(1.f, 16, 16);
+	const int meshNum = 3;
 
+	//a bunch of memory for combine all geometry mesh data
+	std::vector<Vertex> vertices(boxMesh.Vertices.size() + cylinderMesh.Vertices.size() + sphereMesh.Vertices.size());
+	std::vector<uint32> indices(boxMesh.Indices32.size() + cylinderMesh.Indices32.size() + sphereMesh.Indices32.size());
+	MeshData* meshes[meshNum] = {&boxMesh, &cylinderMesh, &sphereMesh};
+	UINT startVertex = 0, startIndex = 0;
+	for (int i = 0; i < meshNum; ++i)
+	{
+		for (int j = 0; j < meshes[i]->Vertices.size(); ++j)
+			vertices[(UINT64)startVertex + j] = meshes[i]->Vertices[j];
+
+		for (int j = 0; j < meshes[i]->Indices32.size(); ++j)
+			indices[(UINT64)startIndex + j] = meshes[i]->Indices32[j];
+
+		startVertex += (UINT)meshes[i]->Vertices.size();
+		startIndex += (UINT)meshes[i]->Indices32.size();
+	}
+
+	//vertex offset
+	UINT boxMeshVertexOffset = 0;
+	UINT cylinderMeshVertexOffset = (UINT)boxMesh.Vertices.size();
+	UINT sphereMeshVertexOffset = cylinderMeshVertexOffset + (UINT)cylinderMesh.Vertices.size();
+
+	//index offset
+	UINT boxMeshIndexOffset = 0;
+	UINT cylinderMeshIndexOffset = (UINT)boxMesh.Indices32.size();
+	UINT sphereMeshIndexOffset = cylinderMeshIndexOffset + (UINT)cylinderMesh.Indices32.size();
+
+	/**sub geometies*/
+	//box mesh
+	SubMeshGeometry boxSubGeo = {};
+	boxSubGeo.baseVertexLocation = boxMeshVertexOffset;
+	boxSubGeo.indexCount = (UINT)boxMesh.Indices32.size();
+	boxSubGeo.startIndexLocation = boxMeshIndexOffset;
+
+	//cylinder mesh
+	SubMeshGeometry cylinderSubGeo = {};
+	cylinderSubGeo.baseVertexLocation = cylinderMeshVertexOffset;
+	cylinderSubGeo.indexCount = (UINT)cylinderMesh.Indices32.size();
+	cylinderSubGeo.startIndexLocation = cylinderMeshIndexOffset;
+
+	//shpere mesh
+	SubMeshGeometry sphereSubGeo = {};
+	sphereSubGeo.baseVertexLocation = sphereMeshVertexOffset;
+	sphereSubGeo.indexCount = (UINT)sphereMesh.Indices32.size();
+	sphereSubGeo.startIndexLocation = sphereMeshIndexOffset;
+
+	//assemble vertices and indices
 	mMeshGeo.reset(new MeshGeometry);
-	
-	D3DCreateBlob(cylinderMesh.Vertices.size() * sizeof(Vertex), mMeshGeo->VertexBufferCPU.GetAddressOf());
-	memcpy(mMeshGeo->VertexBufferCPU->GetBufferPointer(), cylinderMesh.Vertices.data(), mMeshGeo->VertexBufferCPU->GetBufferSize());
+	D3DCreateBlob(vertices.size() * sizeof(Vertex), mMeshGeo->VertexBufferCPU.GetAddressOf());
+	memcpy(mMeshGeo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vertices.size() * sizeof(Vertex));
 	mMeshGeo->VertexBufferGPU =
-	D3DUtil::CreateDefaultBuffer(mDevice.Get(), mCmdList.Get(), cylinderMesh.Vertices.data(), cylinderMesh.Vertices.size() * sizeof(Vertex), mMeshGeo->VertexBufferUploader);
+	D3DUtil::CreateDefaultBuffer(mDevice.Get(), mCmdList.Get(), vertices.data(), vertices.size() * sizeof(Vertex), mMeshGeo->VertexBufferUploader);
 	
-	D3DCreateBlob(cylinderMesh.Indices32.size() * sizeof(uint32), mMeshGeo->IndexBufferCPU.GetAddressOf());
-	memcpy(mMeshGeo->IndexBufferCPU->GetBufferPointer(), cylinderMesh.Indices32.data(), mMeshGeo->IndexBufferCPU->GetBufferSize());
+	D3DCreateBlob(indices.size() * sizeof(uint32), mMeshGeo->IndexBufferCPU.GetAddressOf());
+	memcpy(mMeshGeo->IndexBufferCPU->GetBufferPointer(), indices.data(), indices.size() * sizeof(uint32));
 	mMeshGeo->IndexBufferGPU = 
-	D3DUtil::CreateDefaultBuffer(mDevice.Get(), mCmdList.Get(), cylinderMesh.Indices32.data(), cylinderMesh.Indices32.size() * sizeof(uint32), mMeshGeo->IndexBufferUploader);
+	D3DUtil::CreateDefaultBuffer(mDevice.Get(), mCmdList.Get(), indices.data(), indices.size() * sizeof(uint32), mMeshGeo->IndexBufferUploader);
 	
-	mMeshGeo->indexBufferFormat = DXGI_FORMAT_R32_UINT;
-	mMeshGeo->indexBufferSize = (UINT)cylinderMesh.Indices32.size() * sizeof(uint32);
-	mMeshGeo->Name = "Shape";
-	mMeshGeo->vertexBufferSize = (UINT)cylinderMesh.Vertices.size() * sizeof(Vertex);
+	mMeshGeo->vertexBufferSize = (UINT)vertices.size() * sizeof(Vertex);
 	mMeshGeo->vertexBufferStride = sizeof(Vertex);
-	mMeshGeo->drawArgs["Cylinder"] = cylinderSubGeo1;
+	mMeshGeo->indexBufferSize = (UINT)indices.size() * sizeof(uint32);
+	mMeshGeo->indexBufferFormat = DXGI_FORMAT_R32_UINT;
+	mMeshGeo->Name = "Shape";
+	mMeshGeo->drawArgs["Box"] = std::move(boxSubGeo);
+	mMeshGeo->drawArgs["Cylinder"] = std::move(cylinderSubGeo);
+	mMeshGeo->drawArgs["Sphere"] = std::move(sphereSubGeo);
 
 	return true;
 }
 
 bool ShapeApp::BuildRenderItems()
 {
-	std::vector<DirectX::XMFLOAT3> locations = { {0, 0, 0}, {10, 0, 0} };;
-	for (int i = 0; i < mNumRenderItems; ++i)
+	using namespace DirectX;
+	SubMeshGeometry& box = mMeshGeo->drawArgs["Box"];
+	SubMeshGeometry& cylinder = mMeshGeo->drawArgs["Cylinder"];
+	SubMeshGeometry& sphere = mMeshGeo->drawArgs["Sphere"];
+
+	UINT cbIndex = 0;
+
+	//floor
+	XMFLOAT3 planeLocation = { 0.f, -2.f, 0.f };
+	RenderItem floor = {};
+	floor.BaseVertexLocation = box.baseVertexLocation;
+	floor.DrawIndexCount = box.indexCount;
+	floor.DrawStartIndex = box.startIndexLocation;
+	floor.GeoMesh = mMeshGeo.get();
+	XMFLOAT4X4 boxModel = {};
+	XMStoreFloat4x4(&boxModel, XMMatrixTranslation(planeLocation.x, planeLocation.y, planeLocation.z));
+	floor.ModelMat = boxModel;
+	floor.NumFramesDirty = 3;
+	floor.ObjCBIndex = cbIndex;
+	++cbIndex;
+	floor.PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	mOpaqueRenderItems.push_back(std::move(floor));
+
+	//cylinder
+	const int numCylinders = 4;
+	XMFLOAT3 cylinderLocations[numCylinders] = { {15.f, 10.f, 15.f}, {15.f, 10.f, -15.f}, {-15.f, 10.f, -15.f}, {-15.f, 10.f, 15.f} };
+	XMFLOAT3 sphereLocations[numCylinders] = { {15.f, 21.f, 15.f}, {15.f, 21.f, -15.f}, {-15.f, 21.f, -15.f}, {-15.f, 21.f, 15.f} };
+	for (int i = 0; i < numCylinders; ++i)
 	{
-		RenderItem rItem;
-		rItem.BaseVertexLocation = mMeshGeo->drawArgs["Cylinder"].baseVertexLocation;
-		rItem.DrawIndexCount = mMeshGeo->drawArgs["Cylinder"].indexCount;
-		rItem.DrawStartIndex = mMeshGeo->drawArgs["Cylinder"].startIndexLocation;
-		rItem.GeoMesh = mMeshGeo.get();
-		rItem.PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-		DirectX::XMMATRIX model = DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&locations[i]));
-		DirectX::XMStoreFloat4x4(&rItem.ModelMat, model);
-		rItem.NumFramesDirty = mNumFrameResources;
-		rItem.ObjCBIndex = i;
-		mOpaqueRenderItems.push_back(rItem);
+		//cylinder
+		RenderItem cylinderItem = {};
+		cylinderItem.BaseVertexLocation = cylinder.baseVertexLocation;
+		cylinderItem.DrawIndexCount = cylinder.indexCount;
+		cylinderItem.DrawStartIndex = cylinder.startIndexLocation;
+		cylinderItem.GeoMesh = mMeshGeo.get();
+		XMFLOAT4X4 cylinderModel = {};
+		XMStoreFloat4x4(&cylinderModel, XMMatrixTranslation(cylinderLocations[i].x, cylinderLocations[i].y, cylinderLocations[i].z));
+		cylinderItem.ModelMat = cylinderModel;
+		cylinderItem.NumFramesDirty = 3;
+		cylinderItem.ObjCBIndex = cbIndex;
+		++cbIndex;
+		cylinderItem.PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		mOpaqueRenderItems.push_back(std::move(cylinderItem));
+
+		//sphere
+		RenderItem sphereItem = {};
+		sphereItem.BaseVertexLocation = sphere.baseVertexLocation;
+		sphereItem.DrawIndexCount = sphere.indexCount;
+		sphereItem.DrawStartIndex = sphere.startIndexLocation;
+		sphereItem.GeoMesh = mMeshGeo.get();
+		XMFLOAT4X4 sphereModel = {};
+		XMStoreFloat4x4(&sphereModel, XMMatrixTranslation(sphereLocations[i].x, sphereLocations[i].y, sphereLocations[i].z));
+		sphereItem.ModelMat = sphereModel;
+		sphereItem.NumFramesDirty = 3;
+		sphereItem.ObjCBIndex = cbIndex;
+		++cbIndex;
+		sphereItem.PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		mOpaqueRenderItems.push_back(std::move(sphereItem));
 	}
 
 	return true;
@@ -147,13 +236,13 @@ bool ShapeApp::BuildRenderItems()
 
 bool ShapeApp::InitCamera()
 {
-	mCamera.reset(new Camera(DirectX::XMFLOAT3(0, 0, -10), 0.f, 0.f, 45.f, 1.f));
+	mCamera.reset(new Camera(DirectX::XMFLOAT3(0, 20, -50), 0.f, 0.f, 45.f, (float)mMainWindow->getWidth() / (float)mMainWindow->getHeight()));
 	return true;
 }
 
 void ShapeApp::UpdateObjectCB()
 {
-	for (int i = 0; i < mNumRenderItems; ++i)
+	for (int i = 0; i < mOpaqueRenderItems.size(); ++i)
 	{
 		if (mOpaqueRenderItems[i].NumFramesDirty > 0)
 		{
@@ -213,7 +302,7 @@ void ShapeApp::DrawItems(ID3D12GraphicsCommandList* cmdList, const std::vector<R
 	UINT objCBVIndex = 0;
 	for (int i = 0; i < renderItems.size(); ++i)
 	{
-		objCBVIndex = mCurFrameResourceIndex * mNumRenderItems + i;
+		objCBVIndex = mCurFrameResourceIndex * (UINT)mOpaqueRenderItems.size() + i;
 		auto cbvHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvHeap->GetGPUDescriptorHandleForHeapStart());
 		cbvHandle.Offset(objCBVIndex, mCBVDescriptorSize);
 		cmdList->SetGraphicsRootDescriptorTable(1, cbvHandle);
@@ -231,7 +320,7 @@ bool ShapeApp::BuildDescriptorHeap()
 	D3D12_DESCRIPTOR_HEAP_DESC dhd = {};
 	dhd.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	dhd.NodeMask = 0;
-	dhd.NumDescriptors = mNumFrameResources * (mNumRenderItems + 1);
+	dhd.NumDescriptors = mNumFrameResources * ((UINT)mOpaqueRenderItems.size() + 1);
 	dhd.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 
 	HRESULT result =
@@ -332,7 +421,7 @@ void ShapeApp::Draw()
 
 	mCmdList->SetGraphicsRootSignature(mRootSig.Get());
 	mCmdList->SetDescriptorHeaps(1, (ID3D12DescriptorHeap*const*)mCbvHeap.GetAddressOf());
-	UINT cbvIndex = mNumFrameResources * mNumRenderItems + mCurFrameResourceIndex;
+	UINT cbvIndex = mNumFrameResources * (UINT)mOpaqueRenderItems.size() + mCurFrameResourceIndex;
 	auto cbvHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvHeap->GetGPUDescriptorHandleForHeapStart());
 	cbvHandle.Offset(cbvIndex, mCBVDescriptorSize);
 	mCmdList->SetGraphicsRootDescriptorTable(0, cbvHandle);
@@ -389,7 +478,7 @@ void ShapeApp::OnMouseMove(float xPos, float yPos, float zPos, float xSpeed, flo
 {
 	if (mMouseRightButtonDown)
 	{
-		const float turnRate = 0.0001f;
+		const float turnRate = 0.00008f;
 		mCamera->TurnRight(xSpeed * turnRate);
 		mCamera->TurnUp(ySpeed * turnRate);
 
