@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="MiscCommon">
+      <UniqueIdentifier>{5a6d5971-b4fd-411e-8b76-89ceb9f7f60a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{8b75849b-01ab-4811-b51f-46786ba9b155}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{465abf10-b84a-466a-9798-44c23c363bb2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\MiscCommon\Camera.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\D3DApp.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\D3DInput.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\D3DShader.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\D3DUtil.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\d3dx12.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\DX12Exception.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\FrameResource.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\GameTimer.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\GeometryGenerator.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\GraphicWindow.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\InputHandler.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\MeshGeometry.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\RenderItem.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\UploadBuffer.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\WaveApp.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\MiscCommon\D3DApp.cpp">
+      <Filter>MiscCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MiscCommon\D3DInput.cpp">
+      <Filter>MiscCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MiscCommon\D3DUtil.cpp">
+      <Filter>MiscCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MiscCommon\GameTimer.cpp">
+      <Filter>MiscCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MiscCommon\GeometryGenerator.cpp">
+      <Filter>MiscCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MiscCommon\GraphicWindow.cpp">
+      <Filter>MiscCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\WinMain.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\WaveApp.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
