@@ -2,6 +2,11 @@
 #include "D3DUtil.h"
 #include "MathHelper.h"
 
+WaveApp::~WaveApp()
+{
+	FlushCommandQueue();
+}
+
 bool WaveApp::InitializeApp(HINSTANCE hInstance)
 {
 	if (!D3DApp::InitializeApp(hInstance))
@@ -152,7 +157,6 @@ void WaveApp::Draw()
 
 	mCmdQueue->Signal(mFence.Get(), ++mCurrentFenceValue);
 	curFrameResource->FenceValue = mCurrentFenceValue;
-
 }
 
 bool WaveApp::InitCamere()
@@ -208,7 +212,7 @@ bool WaveApp::InitRenderItems()
 	boxRenderItem.DrawStartIndex = boxSubGeo.startIndexLocation;
 	boxRenderItem.GeoMesh = mMeshGeo.get();
 	DirectX::XMStoreFloat4x4(&boxRenderItem.ModelMat, DirectX::XMMatrixIdentity());
-	boxRenderItem.NumFramesDirty = 3;
+	boxRenderItem.NumFramesDirty = mNumFrameResource;
 	boxRenderItem.ObjCBIndex = ++objCbIndex;
 	boxRenderItem.PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	

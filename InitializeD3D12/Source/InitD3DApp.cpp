@@ -2,6 +2,11 @@
 #include "d3dx12.h"
 #include <D3DUtil.h>
 
+InitD3DApp::~InitD3DApp()
+{
+	FlushCommandQueue();
+}
+
 void InitD3DApp::Draw()
 {
 	D3DApp::Draw();

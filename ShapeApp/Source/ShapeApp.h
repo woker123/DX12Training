@@ -11,7 +11,7 @@ class ShapeApp : public D3DApp
 {
 public:
 	ShapeApp() {};
-	virtual ~ShapeApp() {}
+	virtual ~ShapeApp();
 
 public:
 	virtual bool InitializeApp(HINSTANCE hInstance);

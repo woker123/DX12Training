@@ -5,6 +5,11 @@
 #include "D3DUtil.h"
 #include "FrameResource.h"
 
+ShapeApp::~ShapeApp()
+{
+	FlushCommandQueue();
+}
+
 bool ShapeApp::InitializeApp(HINSTANCE hInstance)
 {
 	if (!D3DApp::InitializeApp(hInstance))
@@ -188,7 +193,7 @@ bool ShapeApp::BuildRenderItems()
 	XMFLOAT4X4 boxModel = {};
 	XMStoreFloat4x4(&boxModel, XMMatrixTranslation(planeLocation.x, planeLocation.y, planeLocation.z));
 	floor.ModelMat = boxModel;
-	floor.NumFramesDirty = 3;
+	floor.NumFramesDirty = mNumFrameResources;
 	floor.ObjCBIndex = cbIndex;
 	++cbIndex;
 	floor.PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;

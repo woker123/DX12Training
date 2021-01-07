@@ -15,7 +15,7 @@ class WaveApp : public D3DApp
 {
 public:
 	WaveApp() {}
-	virtual ~WaveApp() {}
+	virtual ~WaveApp();
 
 public:
 	virtual bool InitializeApp(HINSTANCE hInstance) override;
@@ -50,14 +50,13 @@ private:
 	std::vector<RenderItem> mRenderItems;
 	std::vector<FrameResource> mFrameResources;
 
-	UINT mNumFrameResource = 3;
+	UINT mNumFrameResource = 5;
 	UINT mCurFrameResourceIndex = 0;
 	float mMoveSpeed = 0.01f;
 	bool mMouseRightButtonDown = false;
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> mRootSignature;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> mPSO;
-	
 
 };
 
