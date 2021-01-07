@@ -79,6 +79,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -153,6 +154,7 @@
     <ClInclude Include="..\MiscCommon\GeometryGenerator.h" />
     <ClInclude Include="..\MiscCommon\GraphicWindow.h" />
     <ClInclude Include="..\MiscCommon\InputHandler.h" />
+    <ClInclude Include="..\MiscCommon\MathHelper.h" />
     <ClInclude Include="..\MiscCommon\MeshGeometry.h" />
     <ClInclude Include="..\MiscCommon\RenderItem.h" />
     <ClInclude Include="..\MiscCommon\UploadBuffer.h" />
@@ -165,8 +167,19 @@
     <ClCompile Include="..\MiscCommon\GameTimer.cpp" />
     <ClCompile Include="..\MiscCommon\GeometryGenerator.cpp" />
     <ClCompile Include="..\MiscCommon\GraphicWindow.cpp" />
+    <ClCompile Include="..\MiscCommon\MathHelper.cpp" />
     <ClCompile Include="Source\WaveApp.cpp" />
     <ClCompile Include="Source\WinMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\base_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\base_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

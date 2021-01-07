@@ -60,6 +60,9 @@
     <ClInclude Include="Source\WaveApp.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\MiscCommon\MathHelper.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\MiscCommon\D3DApp.cpp">
@@ -86,5 +89,16 @@
     <ClCompile Include="Source\WaveApp.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\MiscCommon\MathHelper.cpp">
+      <Filter>MiscCommon</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\base_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\base_vs.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

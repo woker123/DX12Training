@@ -7,7 +7,7 @@ class Camera
 public:
 	Camera(const DirectX::XMFLOAT3& location, float yaw, float pitch, float fov, float respect, float n = 0.001f, float f = 10000.f)
 		:mLocation(location), mYaw(yaw), mPitch(pitch), mFov(fov), mAspect(respect), mNear(n), mFar(f) 
-		,mViewMatrix(), mProjectMatrix(), mViewProjectMatrix()
+		,mViewMatrix(), mInvViewMatrix(), mProjectMatrix(), mInvProjectMatrix(), mViewProjectMatrix(), mInvViewProjectMatrix()
 	{
 	}
 	~Camera()
@@ -128,16 +128,34 @@ public:
 		return mViewMatrix;
 	}
 
+	DirectX::XMFLOAT4X4 GetInvViewMatrix()
+	{
+		CalculateMatrices();
+		return mInvViewMatrix;
+	}
+
 	DirectX::XMFLOAT4X4 GetProjectMatrix()
 	{
 		CalculateMatrices();
 		return mProjectMatrix;
 	}
 
+	DirectX::XMFLOAT4X4 GetInvProjMatrix()
+	{
+		CalculateMatrices();
+		return mInvProjectMatrix;
+	}
+
 	DirectX::XMFLOAT4X4 GetViewProjMatrix()
 	{
 		CalculateMatrices();
 		return mViewProjectMatrix;
+	}
+
+	DirectX::XMFLOAT4X4 GetInvViewProjMatrix()
+	{
+		CalculateMatrices();
+		return mInvViewMatrix;
 	}
 
 	DirectX::XMFLOAT3 GetForwardVector()
@@ -177,9 +195,15 @@ private:
 		
 		DirectX::XMMATRIX projectMat = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(mFov), mAspect, mNear, mFar);
 		DirectX::XMMATRIX viewProjectMat = viewMat * projectMat;
+		
+		DirectX::XMMATRIX invViewMat = DirectX::XMMatrixInverse(&DirectX::XMMatrixDeterminant(viewMat), viewMat);
+		DirectX::XMMATRIX invProjMat = DirectX::XMMatrixInverse(&DirectX::XMMatrixDeterminant(projectMat), projectMat);
+		DirectX::XMMATRIX invViewProjMat = DirectX::XMMatrixInverse(&DirectX::XMMatrixDeterminant(viewProjectMat), viewProjectMat);
 
 		DirectX::XMStoreFloat4x4(&mViewMatrix, viewMat);
+		DirectX::XMStoreFloat4x4(&mInvViewMatrix, invViewMat);
 		DirectX::XMStoreFloat4x4(&mProjectMatrix, projectMat);
+		DirectX::XMStoreFloat4x4(&mInvProjectMatrix, invProjMat);
 		DirectX::XMStoreFloat4x4(&mViewProjectMatrix, viewProjectMat);
 	}
 
@@ -193,6 +217,9 @@ private:
 	float mFar;
 
 	DirectX::XMFLOAT4X4 mViewMatrix;
+	DirectX::XMFLOAT4X4 mInvViewMatrix;
 	DirectX::XMFLOAT4X4 mProjectMatrix;
+	DirectX::XMFLOAT4X4	mInvProjectMatrix;
 	DirectX::XMFLOAT4X4 mViewProjectMatrix;
+	DirectX::XMFLOAT4X4 mInvViewProjectMatrix;
 };
