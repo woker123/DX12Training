@@ -169,7 +169,7 @@ bool WaveApp::InitMeshGeo()
 {
 	mMeshGeo.reset(new MeshGeometry);
 	MeshData boxMesh = GeometryGenerator::GenerateBox(1.f, 1.f, 1.f);
-	MeshData landMesh = GeometryGenerator::GenerateLandscape(5.f, 5.f, 8, 8);
+	MeshData landMesh = GeometryGenerator::GenerateLandscape(50.f, 50.f, 64, 64);
 	std::vector<MeshData*> meshDatas = {&boxMesh, &landMesh};
 
 	const size_t boxVertexBufferSizeByte = boxMesh.Vertices.size() * sizeof(Vertex);

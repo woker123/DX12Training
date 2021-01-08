@@ -305,8 +305,6 @@ void GeometryGenerator::BuildGrid(MeshData& meshData, float width, float height,
 	float x = -width * 0.5f;
 	float z = height * 0.5f;
 
-
-
 	//generate vertices
 	meshData.Vertices.reserve((size_t)xNumLine * (size_t)zNumLine);
 	for (int i = 0; i < zNumLine; ++i)
@@ -314,7 +312,8 @@ void GeometryGenerator::BuildGrid(MeshData& meshData, float width, float height,
 		x = -width * 0.5f;
 		for (int j = 0; j < xNumLine; ++j)
 		{
-			meshData.Vertices.push_back({ {x, 0.f, z}, {0.f, 1.f, 0.f}, {1.f, 0.f, 0.f}, {(float)i / (float)hNumGride, (float)j / (float)wNumGride} });
+			float y = CalcHeight(x, z);
+			meshData.Vertices.push_back({ {x, y, z}, {0.f, 1.f, 0.f}, {1.f, 0.f, 0.f}, {(float)i / (float)hNumGride, (float)j / (float)wNumGride} });
 			x += deltaX;
 		}
 		z -= deltaZ;
@@ -335,4 +334,9 @@ void GeometryGenerator::BuildGrid(MeshData& meshData, float width, float height,
 			meshData.Indices32.push_back((i + 1) * xNumLine + j + 1);
 		}
 	}
+}
+
+float GeometryGenerator::CalcHeight(float x, float z)
+{
+	return 0.3f * (z * std::sinf(0.1f * x) + x * cosf(0.1f * z));
 }
