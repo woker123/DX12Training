@@ -82,7 +82,7 @@ void WaveApp::OnMouseMove(float xPos, float yPos, float zPos, float xSpeed, floa
 {
 	if (mMouseRightButtonDown)
 	{
-		const float turnRate = 0.0005f;
+		const float turnRate = 0.0001f;
 		mCamera->TurnRight(xSpeed * turnRate);
 		mCamera->TurnUp(ySpeed * turnRate);
 
@@ -169,34 +169,74 @@ bool WaveApp::InitMeshGeo()
 {
 	mMeshGeo.reset(new MeshGeometry);
 	MeshData boxMesh = GeometryGenerator::GenerateBox(1.f, 1.f, 1.f);
-	const size_t vertexBufferSizeByte = boxMesh.Vertices.size() * sizeof(Vertex);
-	const size_t indexBufferSizeByte = boxMesh.Indices32.size() * sizeof(uint32);
+	MeshData landMesh = GeometryGenerator::GenerateLandscape(5.f, 5.f, 8, 8);
+	std::vector<MeshData*> meshDatas = {&boxMesh, &landMesh};
+
+	const size_t boxVertexBufferSizeByte = boxMesh.Vertices.size() * sizeof(Vertex);
+	const size_t boxIndexBufferSizeByte = boxMesh.Indices32.size() * sizeof(uint32);
+
+	const size_t landVertexBufferSizeByte = landMesh.Vertices.size() * sizeof(Vertex);
+	const size_t landIndexBufferSizeByte = landMesh.Indices32.size() * sizeof(uint32);
 
 	UINT boxVertexOffset = 0;
 	UINT boxVertexStride = sizeof(Vertex);
 	UINT boxIndexOffset = 0;
 	UINT boxIndexCount = (UINT)boxMesh.Indices32.size();
 
-	D3DCreateBlob(vertexBufferSizeByte, &mMeshGeo->VertexBufferCPU);
-	memcpy(mMeshGeo->VertexBufferCPU->GetBufferPointer(), boxMesh.Vertices.data(), vertexBufferSizeByte);
+	UINT landVertexOffset = (UINT)boxMesh.Vertices.size();
+	UINT landVertexStride = sizeof(Vertex);
+	UINT landIndexOffset = (UINT)boxMesh.Indices32.size();
+	UINT landIndexCount = (UINT)landMesh.Indices32.size();
 
-	D3DCreateBlob(indexBufferSizeByte, &mMeshGeo->IndexBufferCPU);
-	memcpy(mMeshGeo->IndexBufferCPU->GetBufferPointer(), boxMesh.Indices32.data(), indexBufferSizeByte);
+	//a bunch of memeory for all vertices indices data
+	std::vector<Vertex> vertices;
+	std::vector<uint32> indices;
+	size_t totalVerticesSize = 0;
+	size_t totalIndicesSize = 0;
+	for (auto meshData : meshDatas)
+	{
+		totalVerticesSize += meshData->Vertices.size();
+		totalIndicesSize += meshData->Indices32.size();
+	}
 
-	mMeshGeo->VertexBufferGPU = D3DUtil::CreateDefaultBuffer(mDevice.Get(), mCmdList.Get(), boxMesh.Vertices.data(), vertexBufferSizeByte, mMeshGeo->VertexBufferUploader);
-	mMeshGeo->IndexBufferGPU = D3DUtil::CreateDefaultBuffer(mDevice.Get(), mCmdList.Get(), boxMesh.Indices32.data(), indexBufferSizeByte, mMeshGeo->IndexBufferUploader);
+	vertices.resize(totalVerticesSize);
+	indices.resize(totalIndicesSize);
+	size_t vertexOffset = 0;
+	size_t indexOffset = 0;
+	for (size_t i = 0; i < meshDatas.size(); ++i)
+	{
+		memcpy(vertices.data() + vertexOffset, meshDatas[i]->Vertices.data(), meshDatas[i]->Vertices.size() * sizeof(Vertex));
+		memcpy(indices.data() + indexOffset, meshDatas[i]->Indices32.data(), meshDatas[i]->Indices32.size() * sizeof(uint32));
+		vertexOffset += meshDatas[i]->Vertices.size();
+		indexOffset += meshDatas[i]->Indices32.size();
+	}
+
+	D3DCreateBlob(vertices.size() * sizeof(Vertex), &mMeshGeo->VertexBufferCPU);
+	memcpy(mMeshGeo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vertices.size() * sizeof(Vertex));
+
+	D3DCreateBlob(indices.size() * sizeof(uint32), &mMeshGeo->IndexBufferCPU);
+	memcpy(mMeshGeo->IndexBufferCPU->GetBufferPointer(), indices.data(), indices.size() * sizeof(uint32));
+
+	mMeshGeo->VertexBufferGPU = D3DUtil::CreateDefaultBuffer(mDevice.Get(), mCmdList.Get(), vertices.data(), vertices.size() * sizeof(Vertex), mMeshGeo->VertexBufferUploader);
+	mMeshGeo->IndexBufferGPU = D3DUtil::CreateDefaultBuffer(mDevice.Get(), mCmdList.Get(), indices.data(), indices.size() * sizeof(uint32), mMeshGeo->IndexBufferUploader);
 
 	SubMeshGeometry boxSubGeo;
 	boxSubGeo.baseVertexLocation = boxVertexOffset;
 	boxSubGeo.indexCount = boxIndexCount;
 	boxSubGeo.startIndexLocation = boxIndexOffset;
 
+	SubMeshGeometry landSubGeo;
+	landSubGeo.baseVertexLocation = landVertexOffset;
+	landSubGeo.indexCount = landIndexCount;
+	landSubGeo.startIndexLocation = landIndexOffset;
+
 	mMeshGeo->Name = "Static Geo";
-	mMeshGeo->vertexBufferSize = (UINT)vertexBufferSizeByte;
-	mMeshGeo->vertexBufferStride = boxVertexStride;
+	mMeshGeo->vertexBufferSize = (UINT)(vertices.size() * sizeof(Vertex));
+	mMeshGeo->vertexBufferStride = sizeof(Vertex);
 	mMeshGeo->indexBufferFormat = DXGI_FORMAT_R32_UINT;
-	mMeshGeo->indexBufferSize = (UINT)indexBufferSizeByte;
+	mMeshGeo->indexBufferSize = (UINT)(indices.size() * sizeof(uint32));
 	mMeshGeo->drawArgs["Box"] = std::move(boxSubGeo);
+	mMeshGeo->drawArgs["Land"] = std::move(landSubGeo);
 
 	return true;
 }
@@ -204,6 +244,7 @@ bool WaveApp::InitMeshGeo()
 bool WaveApp::InitRenderItems()
 {
 	auto& boxSubGeo = mMeshGeo->drawArgs["Box"];
+	auto& landSubGeo = mMeshGeo->drawArgs["Land"];
 	UINT objCbIndex = 0;
 
 	RenderItem boxRenderItem;
@@ -213,10 +254,20 @@ bool WaveApp::InitRenderItems()
 	boxRenderItem.GeoMesh = mMeshGeo.get();
 	DirectX::XMStoreFloat4x4(&boxRenderItem.ModelMat, DirectX::XMMatrixIdentity());
 	boxRenderItem.NumFramesDirty = mNumFrameResource;
-	boxRenderItem.ObjCBIndex = ++objCbIndex;
+	boxRenderItem.ObjCBIndex = objCbIndex++;
 	boxRenderItem.PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	
 	mRenderItems.push_back(std::move(boxRenderItem));
+
+	RenderItem landRenderItem;
+	landRenderItem.BaseVertexLocation = landSubGeo.baseVertexLocation;
+	landRenderItem.DrawIndexCount = landSubGeo.indexCount;
+	landRenderItem.DrawStartIndex = landSubGeo.startIndexLocation;
+	landRenderItem.GeoMesh = mMeshGeo.get();
+	DirectX::XMStoreFloat4x4(&landRenderItem.ModelMat, DirectX::XMMatrixTranslation(0, 0, 0));
+	landRenderItem.NumFramesDirty = mNumFrameResource;
+	landRenderItem.ObjCBIndex = objCbIndex++;
+	landRenderItem.PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	mRenderItems.push_back(std::move(landRenderItem));
 
 	return true;
 }
@@ -280,6 +331,9 @@ bool WaveApp::InitPSO()
 	pso.SampleDesc.Quality = m4xMsaaActive ? queryMsaaQuality() - 1 : 0;
 	pso.VS = CD3DX12_SHADER_BYTECODE(mVS->GetBlob());
 	pso.PS = CD3DX12_SHADER_BYTECODE(mPS->GetBlob());
+	pso.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	pso.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+
 
 	HRESULT result =
 		mDevice->CreateGraphicsPipelineState(&pso, IID_PPV_ARGS(&mPSO));
@@ -322,7 +376,6 @@ void WaveApp::UpdateObjectCB(FrameResource* frameResource)
 			invModel = XMMatrixTranspose(invModel);
 			XMFLOAT4X4 invM;
 			XMStoreFloat4x4(&invM, invModel);
-			objConst.Model = MathHelper::Transpose(invM);
 			frameResource->ObjectCB->CopyData(i, objConst);
 			--mRenderItems[i].NumFramesDirty;
 		}
@@ -334,13 +387,13 @@ void WaveApp::DrawRenderItems()
 	for (int i = 0; i < (int)mRenderItems.size(); ++i)
 	{
 		D3D12_VERTEX_BUFFER_VIEW vbv = {};
-		vbv.BufferLocation = mMeshGeo->VertexBufferGPU->GetGPUVirtualAddress();
-		vbv.SizeInBytes = mMeshGeo->vertexBufferSize;
-		vbv.StrideInBytes = mMeshGeo->vertexBufferStride;
+		vbv.BufferLocation = mRenderItems[i].GeoMesh->VertexBufferGPU->GetGPUVirtualAddress();
+		vbv.SizeInBytes = mRenderItems[i].GeoMesh->vertexBufferSize;
+		vbv.StrideInBytes = mRenderItems[i].GeoMesh->vertexBufferStride;
 
 		D3D12_INDEX_BUFFER_VIEW idv = {};;
-		idv.BufferLocation = mMeshGeo->IndexBufferGPU->GetGPUVirtualAddress();
-		idv.SizeInBytes = mMeshGeo->indexBufferSize;
+		idv.BufferLocation = mRenderItems[i].GeoMesh->IndexBufferGPU->GetGPUVirtualAddress();
+		idv.SizeInBytes = mRenderItems[i].GeoMesh->indexBufferSize;
 		idv.Format = DXGI_FORMAT_R32_UINT;
 
 		mCmdList->IASetVertexBuffers(0, 1, &vbv);

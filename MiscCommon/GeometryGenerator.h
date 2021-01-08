@@ -75,12 +75,17 @@ public:
 
 	static MeshData GenerateSphere(float radius, int sliceCount, int stackCount);
 
+	static MeshData GenerateLandscape(float width, float height, int wNumGride, int hNumGride);
+
 private:
 	static void BuildCylinderLateral(MeshData& meshData, float bottomRadius, float topRadius, float height, int sliceCount, int stackCount);
 
 	static void BuildCylinderTopCap(MeshData& meshData, float bottomRadius, float topRadius, float height, int sliceCount, int stackCount);
 
 	static void BuildCylinderBottomCap(MeshData& meshData, float bottomRadius, float topRadius, float height, int sliceCount, int stackCount);
+
+	static void BuildGrid(MeshData& meshData, float width, float height, int wNumGride, int hNumGride);
+
 
 };
 

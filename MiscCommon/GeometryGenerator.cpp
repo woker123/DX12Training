@@ -287,3 +287,52 @@ MeshData GeometryGenerator::GenerateSphere(float radius, int sliceCount, int sta
 	}
 	return sphereMesh;
 }
+
+MeshData GeometryGenerator::GenerateLandscape(float width, float height, int wNumGride, int hNumGride)
+{
+	MeshData meshData = {};
+	BuildGrid(meshData, width, height, wNumGride, hNumGride);
+
+	return meshData;
+}
+
+void GeometryGenerator::BuildGrid(MeshData& meshData, float width, float height, int wNumGride, int hNumGride)
+{
+	int xNumLine = wNumGride + 1;
+	int zNumLine = hNumGride + 1;
+	float deltaX = width / (float)wNumGride;
+	float deltaZ = height / (float)hNumGride;
+	float x = -width * 0.5f;
+	float z = height * 0.5f;
+
+
+
+	//generate vertices
+	meshData.Vertices.reserve((size_t)xNumLine * (size_t)zNumLine);
+	for (int i = 0; i < zNumLine; ++i)
+	{
+		x = -width * 0.5f;
+		for (int j = 0; j < xNumLine; ++j)
+		{
+			meshData.Vertices.push_back({ {x, 0.f, z}, {0.f, 1.f, 0.f}, {1.f, 0.f, 0.f}, {(float)i / (float)hNumGride, (float)j / (float)wNumGride} });
+			x += deltaX;
+		}
+		z -= deltaZ;
+	}
+
+	//generate indices
+	meshData.Indices32.reserve((size_t)wNumGride * (size_t)hNumGride * 2);
+	for (int i = 0; i < hNumGride; ++i)
+	{
+		for (int j = 0; j < wNumGride; ++j)
+		{
+			meshData.Indices32.push_back(i * xNumLine + j);
+			meshData.Indices32.push_back(i * xNumLine + j + 1);
+			meshData.Indices32.push_back((i + 1) * xNumLine + j);
+
+			meshData.Indices32.push_back((i + 1) * xNumLine + j);
+			meshData.Indices32.push_back(i * xNumLine + j + 1);
+			meshData.Indices32.push_back((i + 1) * xNumLine + j + 1);
+		}
+	}
+}
