@@ -158,6 +158,7 @@
     <ClInclude Include="..\MiscCommon\MeshGeometry.h" />
     <ClInclude Include="..\MiscCommon\RenderItem.h" />
     <ClInclude Include="..\MiscCommon\UploadBuffer.h" />
+    <ClInclude Include="..\MiscCommon\WaveFrameResource.h" />
     <ClInclude Include="Source\WaveApp.h" />
   </ItemGroup>
   <ItemGroup>

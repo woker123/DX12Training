@@ -75,7 +75,9 @@ public:
 
 	static MeshData GenerateSphere(float radius, int sliceCount, int stackCount);
 
-	static MeshData GenerateLandscape(float width, float height, int wNumGride, int hNumGride);
+	static MeshData GenerateLandscape(float width, float height, int wNumGrid, int hNumGrid);
+
+	static MeshData GenerateWave(float width, float height, int wNumGrid, int hNumGrid);
 
 private:
 	static void BuildCylinderLateral(MeshData& meshData, float bottomRadius, float topRadius, float height, int sliceCount, int stackCount);

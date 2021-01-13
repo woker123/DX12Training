@@ -21,6 +21,9 @@ bool WaveApp::InitializeApp(HINSTANCE hInstance)
 	if (!InitMeshGeo())
 		return false;
 
+	if (!InitWaveMeshData())
+		return false;
+
 	if (!InitRenderItems())
 		return false;
 
@@ -102,7 +105,7 @@ void WaveApp::Update(float deltaTime)
 	D3DApp::Update(deltaTime);
 
 	mCurFrameResourceIndex = (mCurFrameResourceIndex + 1) % mNumFrameResource;
-	FrameResource* curFrameResource = &mFrameResources[mCurFrameResourceIndex];
+	WaveFrameResource* curFrameResource = mWaveFrameResources[mCurFrameResourceIndex].get();
 
 	if (curFrameResource->FenceValue > 0 && mFence->GetCompletedValue() < curFrameResource->FenceValue)
 	{
@@ -117,13 +120,14 @@ void WaveApp::Update(float deltaTime)
 
 	UpdatePassCB(curFrameResource);
 	UpdateObjectCB(curFrameResource);
+	UpdateWaveVB(curFrameResource, deltaTime);
 }
 
 void WaveApp::Draw()
 {
 	D3DApp::Draw();
 
-	FrameResource* curFrameResource = &mFrameResources[mCurFrameResourceIndex];
+	FrameResource* curFrameResource = mWaveFrameResources[mCurFrameResourceIndex].get();
 
 	curFrameResource->CmdAlloc->Reset();
 	mCmdList->Reset(curFrameResource->CmdAlloc.Get(), mPSO.Get());
@@ -142,7 +146,7 @@ void WaveApp::Draw()
 	mCmdList->ClearDepthStencilView(currentDepthStencilDSV(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.f, 0xff, 0, nullptr);
 
 	mCmdList->SetGraphicsRootSignature(mRootSignature.Get());
-	mCmdList->SetGraphicsRootConstantBufferView(0, mFrameResources[mCurFrameResourceIndex].PassCB->GetElementGUPVirtualAddress(0));
+	mCmdList->SetGraphicsRootConstantBufferView(0, mWaveFrameResources[mCurFrameResourceIndex]->PassCB->GetElementGUPVirtualAddress(0));
 	DrawRenderItems();
 
 	mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mBackBufferTextures[mCurrentBackBufferIndex].Get(),
@@ -241,6 +245,12 @@ bool WaveApp::InitMeshGeo()
 	return true;
 }
 
+bool WaveApp::InitWaveMeshData()
+{
+	mWaveMeshData.reset(new MeshData(std::move(GeometryGenerator::GenerateWave(mWaveWidth, mWaveHeight, mWaveWGrid, mWaveHGrid))));
+	return true;
+}
+
 bool WaveApp::InitRenderItems()
 {
 	auto& boxSubGeo = mMeshGeo->drawArgs["Box"];
@@ -269,6 +279,17 @@ bool WaveApp::InitRenderItems()
 	landRenderItem.PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	mRenderItems.push_back(std::move(landRenderItem));
 
+	//Wave Render Item
+	RenderItem waveRenderItem;
+	waveRenderItem.BaseVertexLocation = 0;
+	waveRenderItem.DrawIndexCount = (UINT)mWaveMeshData->Indices32.size();
+	waveRenderItem.DrawStartIndex = 0;
+	DirectX::XMStoreFloat4x4(&waveRenderItem.ModelMat, DirectX::XMMatrixTranslation(0, 0, 0));
+	waveRenderItem.NumFramesDirty = mNumFrameResource;
+	waveRenderItem.ObjCBIndex = ++objCbIndex;
+	waveRenderItem.PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	mRenderItems.push_back(std::move(waveRenderItem));
+
 	return true;
 }
 
@@ -283,7 +304,14 @@ bool WaveApp::InitFrameResources()
 {
 	for (UINT i = 0; i < mNumFrameResource; ++i)
 	{
-		mFrameResources.push_back(FrameResource(mDevice.Get(), 1, (UINT)mRenderItems.size()));
+		std::shared_ptr<WaveFrameResource> waveResource(new WaveFrameResource(mDevice.Get(), 1, (UINT)mRenderItems.size()));;
+		waveResource->WaveVB.reset(new UploadBuffer<Vertex>(mDevice.Get(), (int)mWaveMeshData->Vertices.size(), false));
+		for (int i = 0; i < mWaveMeshData->Vertices.size(); ++i)
+			waveResource->WaveVB->CopyData(i, mWaveMeshData->Vertices[i]);
+
+		waveResource->WaveIB = D3DUtil::CreateDefaultBuffer(mDevice.Get(), mCmdList.Get(), mWaveMeshData->Indices32.data(), 
+			mWaveMeshData->Indices32.size() * sizeof(uint32), waveResource->WaveIBUpload);
+		mWaveFrameResources.push_back(std::shared_ptr<WaveFrameResource>(waveResource));
 	}
 	
 	return true;
@@ -374,11 +402,19 @@ void WaveApp::UpdateObjectCB(FrameResource* frameResource)
 			XMMATRIX invModel = XMLoadFloat4x4(&mRenderItems[i].ModelMat);
 			invModel = XMMatrixInverse(&XMMatrixDeterminant(invModel), invModel);
 			invModel = XMMatrixTranspose(invModel);
-			XMFLOAT4X4 invM;
-			XMStoreFloat4x4(&invM, invModel);
+			XMStoreFloat4x4(&objConst.InvModel, invModel);
 			frameResource->ObjectCB->CopyData(i, objConst);
 			--mRenderItems[i].NumFramesDirty;
 		}
+	}
+}
+
+void WaveApp::UpdateWaveVB(WaveFrameResource* waveFrameResource, float deltaTime)
+{
+	for (int i = 0; i < (int)mWaveMeshData->Vertices.size(); ++i)
+	{
+		mWaveMeshData->Vertices[i].Position.y += 1.f * deltaTime;
+		mWaveFrameResources[mCurFrameResourceIndex]->WaveVB->CopyData(i, mWaveMeshData->Vertices[i]);
 	}
 }
 
@@ -387,20 +423,35 @@ void WaveApp::DrawRenderItems()
 	for (int i = 0; i < (int)mRenderItems.size(); ++i)
 	{
 		D3D12_VERTEX_BUFFER_VIEW vbv = {};
-		vbv.BufferLocation = mRenderItems[i].GeoMesh->VertexBufferGPU->GetGPUVirtualAddress();
-		vbv.SizeInBytes = mRenderItems[i].GeoMesh->vertexBufferSize;
-		vbv.StrideInBytes = mRenderItems[i].GeoMesh->vertexBufferStride;
+		D3D12_INDEX_BUFFER_VIEW idv = {};
+		//if render item is wave
+		if (mRenderItems[i].GeoMesh == nullptr)
+		{
+			WaveFrameResource* curFrameResource = mWaveFrameResources[mCurFrameResourceIndex].get();
+			
+			vbv.BufferLocation = curFrameResource->WaveVB->GetD3DResource()->GetGPUVirtualAddress();
+			vbv.SizeInBytes = (UINT)mWaveMeshData->Vertices.size() * sizeof(Vertex);
+			vbv.StrideInBytes = sizeof(Vertex);
+		
+			idv.BufferLocation = curFrameResource->WaveIB->GetGPUVirtualAddress();
+			idv.Format = DXGI_FORMAT_R32_UINT;
+			idv.SizeInBytes = (UINT)mWaveMeshData->Indices32.size() * sizeof(uint32);
+		}
+		else
+		{
+			vbv.BufferLocation = mRenderItems[i].GeoMesh->VertexBufferGPU->GetGPUVirtualAddress();
+			vbv.SizeInBytes = mRenderItems[i].GeoMesh->vertexBufferSize;
+			vbv.StrideInBytes = mRenderItems[i].GeoMesh->vertexBufferStride;
 
-		D3D12_INDEX_BUFFER_VIEW idv = {};;
-		idv.BufferLocation = mRenderItems[i].GeoMesh->IndexBufferGPU->GetGPUVirtualAddress();
-		idv.SizeInBytes = mRenderItems[i].GeoMesh->indexBufferSize;
-		idv.Format = DXGI_FORMAT_R32_UINT;
-
+			idv.BufferLocation = mRenderItems[i].GeoMesh->IndexBufferGPU->GetGPUVirtualAddress();
+			idv.SizeInBytes = mRenderItems[i].GeoMesh->indexBufferSize;
+			idv.Format = DXGI_FORMAT_R32_UINT;	
+		}
 		mCmdList->IASetVertexBuffers(0, 1, &vbv);
 		mCmdList->IASetIndexBuffer(&idv);
 		mCmdList->IASetPrimitiveTopology(mRenderItems[i].PrimitiveTopology);
 
-		D3D12_GPU_VIRTUAL_ADDRESS objCBAdress = mFrameResources[mCurFrameResourceIndex].ObjectCB->GetElementGUPVirtualAddress(i);
+		D3D12_GPU_VIRTUAL_ADDRESS objCBAdress = mWaveFrameResources[mCurFrameResourceIndex]->ObjectCB->GetElementGUPVirtualAddress(i);
 		mCmdList->SetGraphicsRootConstantBufferView(1, objCBAdress);
 
 		mCmdList->DrawIndexedInstanced(mRenderItems[i].DrawIndexCount, 1, mRenderItems[i].DrawStartIndex, mRenderItems[i].BaseVertexLocation, 0);

@@ -9,7 +9,7 @@
 #include "UploadBuffer.h"
 #include <memory>
 #include <vector>
-
+#include "WaveFrameResource.h"
 
 class WaveApp : public D3DApp
 {
@@ -32,6 +32,7 @@ private:
 private:
 	bool InitCamere();
 	bool InitMeshGeo();
+	bool InitWaveMeshData();
 	bool InitRenderItems();
 	bool InitShaders();
 	bool InitFrameResources();
@@ -40,6 +41,7 @@ private:
 
 	void UpdatePassCB(FrameResource* frameResource);
 	void UpdateObjectCB(FrameResource* frameResource);
+	void UpdateWaveVB(WaveFrameResource* waveFrameResource, float deltaTime);
 	void DrawRenderItems();
 
 private:
@@ -48,15 +50,20 @@ private:
 	std::shared_ptr<D3DShader> mVS;
 	std::shared_ptr<D3DShader> mPS;
 	std::vector<RenderItem> mRenderItems;
-	std::vector<FrameResource> mFrameResources;
+	std::vector<std::shared_ptr<WaveFrameResource>> mWaveFrameResources;
+	std::shared_ptr<MeshData> mWaveMeshData;
 
 	UINT mNumFrameResource = 5;
 	UINT mCurFrameResourceIndex = 0;
 	float mMoveSpeed = 0.01f;
 	bool mMouseRightButtonDown = false;
+	float mWaveWidth = 50.f;
+	float mWaveHeight = 50.f;
+	int mWaveWGrid = 32;
+	int mWaveHGrid = 32;
+
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> mRootSignature;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> mPSO;
-
 };
 

@@ -437,11 +437,11 @@ void ShapeApp::Draw()
 	mCmdList->Close();
 	mCmdQueue->ExecuteCommandLists(1, (ID3D12CommandList*const*)mCmdList.GetAddressOf());
 
-	mDxgiSwapChain->Present(0, 0);
-	SwapBackBuffer();
-
 	mCurFrameResource->FenceValue = ++mCurrentFenceValue;
 	mCmdQueue->Signal(mFence.Get(), mCurrentFenceValue);
+
+	mDxgiSwapChain->Present(0, 0);
+	SwapBackBuffer();
 }
 
 void ShapeApp::OnKeyboardAxisEvent(KEY_TYPE key)

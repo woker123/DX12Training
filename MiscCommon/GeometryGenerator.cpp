@@ -288,10 +288,22 @@ MeshData GeometryGenerator::GenerateSphere(float radius, int sliceCount, int sta
 	return sphereMesh;
 }
 
-MeshData GeometryGenerator::GenerateLandscape(float width, float height, int wNumGride, int hNumGride)
+MeshData GeometryGenerator::GenerateLandscape(float width, float height, int wNumGrid, int hNumGrid)
 {
 	MeshData meshData = {};
-	BuildGrid(meshData, width, height, wNumGride, hNumGride);
+	BuildGrid(meshData, width, height, wNumGrid, hNumGrid);
+	for (auto& vertex : meshData.Vertices)
+	{
+		vertex.Position.y = 0.2f * CalcHeight(5 * vertex.Position.x, 5 * vertex.Position.z);
+	}
+
+	return meshData;
+}
+
+MeshData GeometryGenerator::GenerateWave(float width, float height, int wNumGrid, int hNumGrid)
+{
+	MeshData meshData = {};
+	BuildGrid(meshData, width, height, wNumGrid, hNumGrid);
 
 	return meshData;
 }
@@ -312,8 +324,7 @@ void GeometryGenerator::BuildGrid(MeshData& meshData, float width, float height,
 		x = -width * 0.5f;
 		for (int j = 0; j < xNumLine; ++j)
 		{
-			float y = CalcHeight(x, z);
-			meshData.Vertices.push_back({ {x, y, z}, {0.f, 1.f, 0.f}, {1.f, 0.f, 0.f}, {(float)i / (float)hNumGride, (float)j / (float)wNumGride} });
+			meshData.Vertices.push_back({ {x, 0, z}, {0.f, 1.f, 0.f}, {1.f, 0.f, 0.f}, {(float)i / (float)hNumGride, (float)j / (float)wNumGride} });
 			x += deltaX;
 		}
 		z -= deltaZ;
