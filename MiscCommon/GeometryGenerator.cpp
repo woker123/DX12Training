@@ -295,6 +295,8 @@ MeshData GeometryGenerator::GenerateLandscape(float width, float height, int wNu
 	for (auto& vertex : meshData.Vertices)
 	{
 		vertex.Position.y = 0.2f * CalcHeight(5 * vertex.Position.x, 5 * vertex.Position.z);
+
+		//todo£ºneed to generate normal and tangent
 	}
 
 	return meshData;

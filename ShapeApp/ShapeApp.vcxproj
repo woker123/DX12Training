@@ -154,9 +154,11 @@
     <ClInclude Include="..\MiscCommon\GeometryGenerator.h" />
     <ClInclude Include="..\MiscCommon\GraphicWindow.h" />
     <ClInclude Include="..\MiscCommon\InputHandler.h" />
+    <ClInclude Include="..\MiscCommon\MathHelper.h" />
     <ClInclude Include="..\MiscCommon\MeshGeometry.h" />
     <ClInclude Include="..\MiscCommon\RenderItem.h" />
     <ClInclude Include="..\MiscCommon\UploadBuffer.h" />
+    <ClInclude Include="..\MiscCommon\WaveFrameResource.h" />
     <ClInclude Include="Source\ShapeApp.h" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +168,7 @@
     <ClCompile Include="..\MiscCommon\GameTimer.cpp" />
     <ClCompile Include="..\MiscCommon\GeometryGenerator.cpp" />
     <ClCompile Include="..\MiscCommon\GraphicWindow.cpp" />
+    <ClCompile Include="..\MiscCommon\MathHelper.cpp" />
     <ClCompile Include="Source\ShapeApp.cpp" />
     <ClCompile Include="Source\WinMain.cpp" />
   </ItemGroup>

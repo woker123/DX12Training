@@ -12,6 +12,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\ShapeApp.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\MiscCommon\Camera.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
@@ -33,6 +36,9 @@
     <ClInclude Include="..\MiscCommon\DX12Exception.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\MiscCommon\FrameResource.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
     <ClInclude Include="..\MiscCommon\GameTimer.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
@@ -45,23 +51,29 @@
     <ClInclude Include="..\MiscCommon\InputHandler.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\MiscCommon\MathHelper.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
     <ClInclude Include="..\MiscCommon\MeshGeometry.h">
-      <Filter>MiscCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\MiscCommon\UploadBuffer.h">
-      <Filter>MiscCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ShapeApp.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\MiscCommon\FrameResource.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
     <ClInclude Include="..\MiscCommon\RenderItem.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\MiscCommon\UploadBuffer.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\WaveFrameResource.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\WinMain.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ShapeApp.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\MiscCommon\D3DApp.cpp">
       <Filter>MiscCommon</Filter>
     </ClCompile>
@@ -74,16 +86,13 @@
     <ClCompile Include="..\MiscCommon\GameTimer.cpp">
       <Filter>MiscCommon</Filter>
     </ClCompile>
+    <ClCompile Include="..\MiscCommon\GeometryGenerator.cpp">
+      <Filter>MiscCommon</Filter>
+    </ClCompile>
     <ClCompile Include="..\MiscCommon\GraphicWindow.cpp">
       <Filter>MiscCommon</Filter>
     </ClCompile>
-    <ClCompile Include="Source\WinMain.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ShapeApp.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\MiscCommon\GeometryGenerator.cpp">
+    <ClCompile Include="..\MiscCommon\MathHelper.cpp">
       <Filter>MiscCommon</Filter>
     </ClCompile>
   </ItemGroup>

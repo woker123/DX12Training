@@ -146,24 +146,30 @@
     <ClCompile Include="..\MiscCommon\D3DInput.cpp" />
     <ClCompile Include="..\MiscCommon\D3DUtil.cpp" />
     <ClCompile Include="..\MiscCommon\GameTimer.cpp" />
+    <ClCompile Include="..\MiscCommon\GeometryGenerator.cpp" />
     <ClCompile Include="..\MiscCommon\GraphicWindow.cpp" />
+    <ClCompile Include="..\MiscCommon\MathHelper.cpp" />
     <ClCompile Include="Source\BoxApp.cpp" />
     <ClCompile Include="Source\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\MiscCommon\Camera.h" />
-    <ClInclude Include="..\MiscCommon\D3DShader.h" />
     <ClInclude Include="..\MiscCommon\D3DApp.h" />
     <ClInclude Include="..\MiscCommon\D3DInput.h" />
+    <ClInclude Include="..\MiscCommon\D3DShader.h" />
     <ClInclude Include="..\MiscCommon\D3DUtil.h" />
     <ClInclude Include="..\MiscCommon\d3dx12.h" />
     <ClInclude Include="..\MiscCommon\DX12Exception.h" />
+    <ClInclude Include="..\MiscCommon\FrameResource.h" />
     <ClInclude Include="..\MiscCommon\GameTimer.h" />
     <ClInclude Include="..\MiscCommon\GeometryGenerator.h" />
     <ClInclude Include="..\MiscCommon\GraphicWindow.h" />
     <ClInclude Include="..\MiscCommon\InputHandler.h" />
+    <ClInclude Include="..\MiscCommon\MathHelper.h" />
     <ClInclude Include="..\MiscCommon\MeshGeometry.h" />
+    <ClInclude Include="..\MiscCommon\RenderItem.h" />
     <ClInclude Include="..\MiscCommon\UploadBuffer.h" />
+    <ClInclude Include="..\MiscCommon\WaveFrameResource.h" />
     <ClInclude Include="Source\BoxApp.h" />
   </ItemGroup>
   <ItemGroup>

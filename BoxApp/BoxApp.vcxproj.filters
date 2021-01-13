@@ -12,6 +12,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\WinMain.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BoxApp.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\MiscCommon\D3DApp.cpp">
       <Filter>MiscCommon</Filter>
     </ClCompile>
@@ -24,21 +30,30 @@
     <ClCompile Include="..\MiscCommon\GameTimer.cpp">
       <Filter>MiscCommon</Filter>
     </ClCompile>
+    <ClCompile Include="..\MiscCommon\GeometryGenerator.cpp">
+      <Filter>MiscCommon</Filter>
+    </ClCompile>
     <ClCompile Include="..\MiscCommon\GraphicWindow.cpp">
       <Filter>MiscCommon</Filter>
     </ClCompile>
-    <ClCompile Include="Source\WinMain.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BoxApp.cpp">
-      <Filter>Source</Filter>
+    <ClCompile Include="..\MiscCommon\MathHelper.cpp">
+      <Filter>MiscCommon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\BoxApp.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\Camera.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
     <ClInclude Include="..\MiscCommon\D3DApp.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
     <ClInclude Include="..\MiscCommon\D3DInput.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\D3DShader.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
     <ClInclude Include="..\MiscCommon\D3DUtil.h">
@@ -50,31 +65,34 @@
     <ClInclude Include="..\MiscCommon\DX12Exception.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\MiscCommon\FrameResource.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
     <ClInclude Include="..\MiscCommon\GameTimer.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\GeometryGenerator.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
     <ClInclude Include="..\MiscCommon\GraphicWindow.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
-    <ClInclude Include="Source\BoxApp.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\MiscCommon\InputHandler.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\MiscCommon\D3DShader.h">
-      <Filter>MiscCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\MiscCommon\UploadBuffer.h">
+    <ClInclude Include="..\MiscCommon\MathHelper.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
     <ClInclude Include="..\MiscCommon\MeshGeometry.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\MiscCommon\Camera.h">
+    <ClInclude Include="..\MiscCommon\RenderItem.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\MiscCommon\GeometryGenerator.h">
+    <ClInclude Include="..\MiscCommon\UploadBuffer.h">
+      <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MiscCommon\WaveFrameResource.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
   </ItemGroup>
