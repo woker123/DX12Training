@@ -59,8 +59,8 @@ private:
 	bool mMouseRightButtonDown = false;
 	float mWaveWidth = 50.f;
 	float mWaveHeight = 50.f;
-	int mWaveWGrid = 32;
-	int mWaveHGrid = 32;
+	int mWaveWGrid = 64;
+	int mWaveHGrid = 64;
 
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> mRootSignature;

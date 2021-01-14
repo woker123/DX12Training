@@ -96,6 +96,20 @@ public:
 		return result;
 	}
 
+	static DirectX::XMFLOAT3 Cross(const DirectX::XMFLOAT3& v1, const DirectX::XMFLOAT3& v2)
+	{
+		DirectX::XMFLOAT3 result;
+		DirectX::XMStoreFloat3(&result, DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&v1), DirectX::XMLoadFloat3(&v2)));
+		return result;
+	}
+
+	static DirectX::XMFLOAT3 Normalize(const DirectX::XMFLOAT3& v)
+	{
+		DirectX::XMFLOAT3 result;
+		DirectX::XMStoreFloat3(&result, DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&v)));
+		return result; 
+	}
+
     static DirectX::XMVECTOR RandUnitVec3();
     static DirectX::XMVECTOR RandHemisphereUnitVec3(DirectX::XMVECTOR n);
 
@@ -105,3 +119,16 @@ public:
 
 };
 
+#define FLOAT3OPFUNCDESC(op)\
+inline const DirectX::XMFLOAT3 operator##op(const DirectX::XMFLOAT3& v1, const DirectX::XMFLOAT3& v2)\
+{\
+	using namespace DirectX;\
+	XMFLOAT3 result;\
+	XMStoreFloat3(&result, XMLoadFloat3(&v1) op XMLoadFloat3(&v2));\
+	return result;\
+}
+
+FLOAT3OPFUNCDESC(+)
+FLOAT3OPFUNCDESC(-)
+FLOAT3OPFUNCDESC(*)
+FLOAT3OPFUNCDESC(/)

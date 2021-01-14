@@ -1,4 +1,5 @@
 #include "GeometryGenerator.h"
+#include "MathHelper.h"
 
 MeshData GeometryGenerator::GenerateBox(float xSize, float ySize, float zSize, int xSlice, int ySlice, int zSlice)
 {
@@ -295,7 +296,7 @@ MeshData GeometryGenerator::GenerateLandscape(float width, float height, int wNu
 	for (auto& vertex : meshData.Vertices)
 	{
 		vertex.Position.y = 0.2f * CalcHeight(5 * vertex.Position.x, 5 * vertex.Position.z);
-
+		CalcNormal(meshData);
 		//todo£ºneed to generate normal and tangent
 	}
 
@@ -347,6 +348,26 @@ void GeometryGenerator::BuildGrid(MeshData& meshData, float width, float height,
 			meshData.Indices32.push_back((i + 1) * xNumLine + j + 1);
 		}
 	}
+}
+
+void GeometryGenerator::CalcNormal(MeshData& meshData)
+{
+	///too slow
+	//using namespace DirectX;
+	//auto& vertices = meshData.Vertices;
+	//auto& indices = meshData.Indices32;
+	////for every actual vertex
+	//size_t numTriangles = meshData.Indices32.size() / 3;
+	//for (size_t i = 0; i < numTriangles; ++i)
+	//{
+	//	auto& p0 = vertices[indices[i * 3]];
+	//	auto& p1 = vertices[indices[i * 3 + 1]];
+	//	auto& p2 = vertices[indices[i * 3 + 2]];
+	//	
+	//	p0.Normal = MathHelper::Normalize((p0.Normal + MathHelper::Normalize(MathHelper::Cross(p1.Position - p0.Position, p2.Position - p0.Position))));
+	//	p1.Normal = MathHelper::Normalize((p1.Normal + MathHelper::Normalize(MathHelper::Cross(p2.Position - p1.Position, p0.Position - p1.Position))));
+	//	p2.Normal = MathHelper::Normalize((p2.Normal + MathHelper::Normalize(MathHelper::Cross(p0.Position - p2.Position, p1.Position - p2.Position))));
+	//}
 }
 
 float GeometryGenerator::CalcHeight(float x, float z)

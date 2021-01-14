@@ -359,8 +359,8 @@ bool WaveApp::InitPSO()
 	pso.SampleDesc.Quality = m4xMsaaActive ? queryMsaaQuality() - 1 : 0;
 	pso.VS = CD3DX12_SHADER_BYTECODE(mVS->GetBlob());
 	pso.PS = CD3DX12_SHADER_BYTECODE(mPS->GetBlob());
-	pso.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-	pso.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	//pso.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	//pso.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
 
 
 	HRESULT result =

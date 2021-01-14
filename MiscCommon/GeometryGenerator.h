@@ -88,6 +88,8 @@ private:
 
 	static void BuildGrid(MeshData& meshData, float width, float height, int wNumGride, int hNumGride);
 
+	static void CalcNormal(MeshData& meshData);
+
 	static float CalcHeight(float x, float z);
 
 };
