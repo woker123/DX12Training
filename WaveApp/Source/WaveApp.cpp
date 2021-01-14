@@ -411,11 +411,22 @@ void WaveApp::UpdateObjectCB(FrameResource* frameResource)
 
 void WaveApp::UpdateWaveVB(WaveFrameResource* waveFrameResource, float deltaTime)
 {
-	/*for (int i = 0; i < (int)mWaveMeshData->Vertices.size(); ++i)
+	float a = 1.f;
+	float b = 1.f;
+	float c = -1.f;
+	float d = 0.08f;
+	static float time = 0.f;
+
+	for (int i = 0; i < (int)mWaveMeshData->Vertices.size(); ++i)
 	{
-		mWaveMeshData->Vertices[i].Position.y += 1.f * deltaTime;
+		auto& pos = mWaveMeshData->Vertices[i].Position;
+		float r = std::sqrt(std::pow(pos.x, 2.f) + std::pow(pos.z, 2.f));
+		float y = a * std::sin(b * r + c * time) * std::exp(-d * r);
+		pos.y = y;
 		mWaveFrameResources[mCurFrameResourceIndex]->WaveVB->CopyData(i, mWaveMeshData->Vertices[i]);
-	}*/
+	}
+
+	time += deltaTime;
 }
 
 void WaveApp::DrawRenderItems()
