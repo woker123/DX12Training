@@ -92,9 +92,6 @@
     <ClInclude Include="..\MiscCommon\UploadBuffer.h">
       <Filter>MiscCommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\MiscCommon\WaveFrameResource.h">
-      <Filter>MiscCommon</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\base_vs.hlsl">

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ProjectOutputs>
+    <ProjectOutput>
+      <FullPath>E:\DX12Proj\DX12Training\05-LightApp.exe</FullPath>
+    </ProjectOutput>
+  </ProjectOutputs>
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>E:\DX12Proj\DX12Training\base_ps.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>E:\DX12Proj\DX12Training\base_vs.cso</FullPath>
+    </ContentFile>
+  </ContentFiles>
+  <SatelliteDlls />
+  <NonRecipeFileRefs />
+</Project>

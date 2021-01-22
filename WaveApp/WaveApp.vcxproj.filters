@@ -60,11 +60,11 @@
     <ClInclude Include="Source\WaveApp.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\MiscCommon\WaveFrameResource.h">
-      <Filter>MiscCommon</Filter>
-    </ClInclude>
     <ClInclude Include="..\MiscCommon\MathHelper.h">
       <Filter>MiscCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\WaveFrameResource.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
