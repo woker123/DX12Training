@@ -181,8 +181,8 @@ bool D3DApp::CreateSwapchain()
     swpdesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
     swpdesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
     swpdesc.OutputWindow = mMainWindow->getHWND();
-    swpdesc.SampleDesc.Count = m4xMsaaActive ? 4 : 1;
-    swpdesc.SampleDesc.Quality = m4xMsaaActive ? m4xMsaaQuality : 0;
+    swpdesc.SampleDesc.Count = 1;
+    swpdesc.SampleDesc.Quality = 0;
     swpdesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     swpdesc.Windowed = true;
     swpdesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;

@@ -42,9 +42,6 @@ bool LightApp::InitializeApp(HINSTANCE hInstance)
 	if (!InitCamera())
 		return false;
 
-	
-
-
 	mCmdList->Close();
 	mCmdQueue->ExecuteCommandLists(1, (ID3D12CommandList*const*)mCmdList.GetAddressOf());
 	FlushCommandQueue();

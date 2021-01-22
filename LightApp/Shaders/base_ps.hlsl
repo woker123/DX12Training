@@ -25,5 +25,6 @@ cbuffer LightConstant : register(b2)
 
 float4 main(PSIn pin) : SV_Target
 {
-    return float4(pin.normal * normalize(lights[0].LightPosition), 1);
+    float f = dot(normalize(pin.normal), normalize(-lights[0].LightDirection));
+    return float4(f, f, f, 1);
 }
