@@ -40,7 +40,7 @@ public:
 		PassCB = std::make_shared<UploadBuffer<PassConstant>>(device, numPassCB, true);
 		ObjectCB = std::make_shared<UploadBuffer<ObjectConstant>>(device, numObjCB, true);
 	}
-	~FrameResource() {}
+	virtual ~FrameResource() {}
 
 	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> CmdAlloc;
 	std::shared_ptr<UploadBuffer<PassConstant>> PassCB;

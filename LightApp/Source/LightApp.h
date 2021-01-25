@@ -18,19 +18,18 @@ public:
 
 private:
 	bool BuildRootSignature();
-	bool BuildShaders();
+	
 	bool BuildPSO();
 	bool BuildFrameResources();
 	bool BuildMeshGeometry();
+	bool BuildLights();
+	bool BuildShaders();
 	bool BuildRenderItems();
 	bool InitCamera();
 	void UpdateObjectCB();
 	void UpdatePassCB();
-	void DrawItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem>& renderItems);
-
-private:
-	bool InitLights();
 	void UpdateLightCB();
+	void DrawItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem>& renderItems);
 
 private:
 	virtual void Update(float deltaTime);
@@ -57,16 +56,16 @@ private:
 	std::shared_ptr<D3DShader> mVSShader;
 	std::shared_ptr<D3DShader> mPSShader;
 
-	std::vector<MaterialFrameResource> mFrameResources;
+	std::vector<LightFrameResource> mFrameResources;
 	int mNumFrameResources = 3;
 	int mCurFrameResourceIndex = -1;
-	MaterialFrameResource* mCurFrameResource = nullptr;
+	LightFrameResource* mCurFrameResource = nullptr;
 	int mCBVDescriptorSize = 0;
 
 	std::vector<RenderItem> mOpaqueRenderItems;
 	
 	std::shared_ptr<MeshGeometry> mMeshGeo;
-	float mMoveSpeed = 0.01f;
+	float mMoveSpeed = 30.f;
 	bool mMouseRightButtonDown = false;
 
 private:

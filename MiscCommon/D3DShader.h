@@ -11,9 +11,9 @@
 class D3DShader
 {
 public:
-	D3DShader(LPCWSTR fileName, LPCSTR target)
+	D3DShader(LPCWSTR fileName, LPCSTR target, D3D_SHADER_MACRO* macros)
 	{
-		bool D3D12Shader_Construct = InitializeShader(fileName, target);
+		bool D3D12Shader_Construct = InitializeShader(fileName, target, macros);
 		assert(D3D12Shader_Construct);
 	}
 	~D3DShader() {}
@@ -25,13 +25,13 @@ public:
 	}
 
 private:
-	bool InitializeShader(LPCWSTR shaderFile, LPCSTR target)
+	bool InitializeShader(LPCWSTR shaderFile, LPCSTR target, D3D_SHADER_MACRO* macros)
 	{
 		UINT compileFlag = 0;
 #if defined(DEBUG) || defined(_DEBUG)
 		compileFlag = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
-		HRESULT result = D3DCompileFromFile(shaderFile, nullptr, nullptr, "main", target, compileFlag, 0, &mShaderBlob, nullptr);
+		HRESULT result = D3DCompileFromFile(shaderFile, macros, nullptr, "main", target, compileFlag, 0, &mShaderBlob, nullptr);
 		return SUCCEEDED(result);
 	}
 

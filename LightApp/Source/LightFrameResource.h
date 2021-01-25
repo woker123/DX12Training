@@ -3,14 +3,14 @@
 #include "FrameResource.h"
 #include "Light.h"
 
-struct MaterialFrameResource : public FrameResource
+struct LightFrameResource : public FrameResource
 {
-	MaterialFrameResource(ID3D12Device* device, UINT numPassCB, UINT numObjCB, UINT numLight)
+	LightFrameResource(ID3D12Device* device, UINT numPassCB, UINT numObjCB)
 		:FrameResource(device, numPassCB, numObjCB)
 	{
-		LightCB.reset(new UploadBuffer<LightConstant>(device, numLight, true));
+		LightCB.reset(new UploadBuffer<LightConstant>(device, 1, true));
 	}
-	virtual ~MaterialFrameResource() {}
+	virtual ~LightFrameResource() {}
 
 	std::shared_ptr<UploadBuffer<LightConstant>> LightCB;
 };

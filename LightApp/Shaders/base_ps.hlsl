@@ -1,3 +1,10 @@
+#define MAX_LIGHT_COUNT 10
+#define DIRECTIONAL_LIGHT_TYPE 0
+#define POINT_LIGHT_TYPE 1
+#define SPOT_LIGHT_TYPE 2
+#define TRUE 1
+#define FASLE 0
+
 struct PSIn
 {
     float3 position : VO_POSITION;
@@ -16,15 +23,66 @@ struct LightInfo
     float3 LightDirection;
     float  FalloffStartAngle;
     float  FalloffEndAngle;
+    uint   LightType;
+    uint   LightEnbale;
 };
 
 cbuffer LightConstant : register(b2)
 {
-    LightInfo lights[3];
+	LightInfo lights[MAX_LIGHT_COUNT];
 }
+
+float3 calcDirecionalLight(float3 originColor, float3 normal, int lightIndex);
+float3 calcPointLight(float3 originColor, float3 pixelPos, float3 normal, int lightIndex);
+float3 calcSpotLight(float3 originColor, float3 normal, int lightIndex);
 
 float4 main(PSIn pin) : SV_Target
 {
-    float f = dot(normalize(pin.normal), normalize(-lights[0].LightDirection));
-    return float4(f, f, f, 1);
+    float3 originColor = float3(1.f, 1.f, 1.f);
+    float3 finalColor = float3(0.f, 0.f, 0.f);
+    for (int i = 0; i < MAX_LIGHT_COUNT; ++i)
+    {
+        switch (lights[i].LightType)
+        {
+            case DIRECTIONAL_LIGHT_TYPE:
+                if(lights[i].LightEnbale == TRUE)
+                    finalColor += calcDirecionalLight(originColor, normalize(pin.normal), i);
+                break;
+            case POINT_LIGHT_TYPE:
+                if (lights[i].LightEnbale == TRUE)
+                    finalColor += calcPointLight(originColor, pin.position, normalize(pin.normal), i);
+                break;
+            case SPOT_LIGHT_TYPE:
+                if (lights[i].LightEnbale == TRUE)
+                    finalColor += calcSpotLight(originColor, normalize(pin.normal), i);
+                break;
+            default:
+                break;
+        }
+    }
+    return float4(finalColor, 1.f);
+}
+
+float3 calcDirecionalLight(float3 originColor, float3 normal, int lightIndex)
+{
+    return originColor * lights[lightIndex].LightIntensity * dot(normal, normalize(-lights[lightIndex].LightDirection));
+}
+
+float3 calcPointLight(float3 originColor, float3 pixelPos, float3 normal, int lightIndex)
+{
+    float3 lightDirection = normalize(lights[lightIndex].LightPosition - pixelPos);
+    float3 intensity = clamp(lights[lightIndex].LightIntensity * dot(lightDirection, normal), 0.f, 1.f);
+    float lightDistance = length(lights[lightIndex].LightPosition - pixelPos);
+    if(lightDistance >= lights[lightIndex].FalloffEndRadius)
+        return float3(0.f, 0.f, 0.f);
+    else if(lightDistance < lights[lightIndex].FalloffStartRadius)
+        return intensity;
+    else
+        return lerp(intensity, float3(0.f, 0.f, 0.f), (lightDistance - lights[lightIndex].FalloffStartRadius) / (lights[lightIndex].FalloffEndRadius - lights[lightIndex].FalloffStartRadius));
+}
+
+float3 calcSpotLight(float3 originColor, float3 normal, int lightIndex)
+{
+    return float3(0.f, 0.f, 0.f);
+
 }

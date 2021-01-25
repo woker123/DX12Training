@@ -4,6 +4,7 @@
 #include <d3dcompiler.h>
 #include "D3DUtil.h"
 #include "LightFrameResource.h"
+#include <string>
 
 LightApp::~LightApp()
 {
@@ -21,19 +22,19 @@ bool LightApp::InitializeApp(HINSTANCE hInstance)
 	if (!BuildRootSignature())
 		return false;
 
+	if (!BuildMeshGeometry())
+		return false;
+
+	if (!BuildLights())
+		return false;
+
 	if (!BuildShaders())
 		return false;
 
 	if (!BuildPSO())
 		return false;
 
-	if (!BuildMeshGeometry())
-		return false;
-
 	if (!BuildRenderItems())
-		return false;
-
-	if (!InitLights())
 		return false;
 
 	if (!BuildFrameResources())
@@ -54,7 +55,7 @@ bool LightApp::BuildFrameResources()
 	size_t numLights = mDirectionalLights.size() + mPointLights.size() + mSpotLights.size();
 	for (int i = 0; i < mNumFrameResources; ++i)
 	{
-		mFrameResources.push_back(MaterialFrameResource(mDevice.Get(), 1, (UINT)mOpaqueRenderItems.size(), (UINT)numLights));
+		mFrameResources.push_back(LightFrameResource(mDevice.Get(), 1, (UINT)mOpaqueRenderItems.size()));
 	}
 
 	return true;
@@ -64,8 +65,8 @@ bool LightApp::BuildMeshGeometry()
 {
 	//generate mesh data
 	auto boxMesh = GeometryGenerator::GenerateBox(60.f, 4.f, 50.f);
-	auto cylinderMesh = GeometryGenerator::GenerateCylinder(2.f, 1.f, 20.f, 16, 16);
-	auto sphereMesh = GeometryGenerator::GenerateSphere(1.f, 16, 16);
+	auto cylinderMesh = GeometryGenerator::GenerateCylinder(2.f, 1.f, 20.f, 32, 32);
+	auto sphereMesh = GeometryGenerator::GenerateSphere(1.f, 32, 32);
 	const int meshNum = 3;
 
 	//a bunch of memory for combine all geometry mesh data
@@ -281,30 +282,36 @@ void LightApp::DrawItems(ID3D12GraphicsCommandList* cmdList, const std::vector<R
 		cmdList->DrawIndexedInstanced(renderItems[i].DrawIndexCount, 1, renderItems[i].DrawStartIndex, renderItems[i].BaseVertexLocation, 0);
 	}
 }
-bool LightApp::InitLights()
+bool LightApp::BuildLights()
 {
-	mDirectionalLights.push_back(DirectionalLight({1.f, 1.f, 1.f}, {-1.f, -1.f, -1.f}));
-	mPointLights.push_back(PointLight({1.f, 0.f, 0.f}, {0.f, 10.f, 0.f}, 0.1f, 100.f));
+	//mDirectionalLights.push_back(DirectionalLight({1.f, 1.f, 1.f}, {-1.f, -1.f, -1.f}));
+	mPointLights.push_back(PointLight({1.f, 1.f, 1.f}, {0.f, 10.f, 0.f}, 0.1f, 30.f));
 	mSpotLights.push_back(SpotLight({ 0.f, 1.f, 0.f }, { 0.f, 10.f, 0.f }, { -1.f, - 1.f, -1.f }, 0.1f, 100.f, 5.f, 45.f));
 	return true;
 }
 
 void LightApp::UpdateLightCB()
 {
-	for (int i = 0; i < (int)mDirectionalLights.size(); ++i)
+	LightConstant lightConst = {};
+	int numLight = 0;
+	for (int i = 0; i < (int)mDirectionalLights.size(); ++i, ++numLight)
 	{
-		mCurFrameResource->LightCB->CopyData(i, mDirectionalLights[i].GetLightConstant());
+		if (numLight < MAX_LIGHT_COUNT)
+			lightConst.lights[i] = mDirectionalLights[i].GetLightConstant();
 	}
 
-	for (int i = 0; i < (int)mPointLights.size(); ++i)
+	for (int i = 0; i < (int)mPointLights.size(); ++i, ++numLight)
 	{
-		mCurFrameResource->LightCB->CopyData(i + (int)mDirectionalLights.size(), mPointLights[i].GetLightConstant());
+		if(numLight < MAX_LIGHT_COUNT)
+			lightConst.lights[i + (int)mDirectionalLights.size()] =  mPointLights[i].GetLightConstant();
 	}
 
-	for (int i = 0; i < (int)mSpotLights.size(); ++i)
+	for (int i = 0; i < (int)mSpotLights.size(); ++i, ++numLight)
 	{
-		mCurFrameResource->LightCB->CopyData(i + (int)mDirectionalLights.size() + (int)mPointLights.size(), mSpotLights[i].GetLightConstant());
+		if(numLight < MAX_LIGHT_COUNT)
+			lightConst.lights[i + (int)mDirectionalLights.size() + (int)mPointLights.size()] = mSpotLights[i].GetLightConstant();
 	}
+	mCurFrameResource->LightCB->CopyData(0, lightConst);
 }
 
 
@@ -328,8 +335,8 @@ bool LightApp::BuildRootSignature()
 
 bool LightApp::BuildShaders()
 {
-	mVSShader.reset(new D3DShader(L"./Shaders/base_vs.hlsl", "vs_5_0"));
-	mPSShader.reset(new D3DShader(L"./Shaders/base_ps.hlsl", "ps_5_0"));
+	mVSShader.reset(new D3DShader(L"./Shaders/base_vs.hlsl", "vs_5_0", nullptr));
+	mPSShader.reset(new D3DShader(L"./Shaders/base_ps.hlsl", "ps_5_0", nullptr));
 
 	return true;
 }
@@ -414,25 +421,27 @@ void LightApp::Draw()
 
 void LightApp::OnKeyboardAxisEvent(KEY_TYPE key)
 {
+	float deltaTime = (float)mGlobalTimer->deltaTime();
+	float moveDistance = mMoveSpeed * deltaTime;
 	switch (key)
 	{
 	case KEY_TYPE::KEY_W:
-		mCamera->MoveFoward(mMoveSpeed);
+		mCamera->MoveFoward(moveDistance);
 		break;
 	case KEY_TYPE::KEY_A:
-		mCamera->MoveLeft(mMoveSpeed);
+		mCamera->MoveLeft(moveDistance);
 		break;
 	case KEY_TYPE::KEY_S:
-		mCamera->MoveBack(mMoveSpeed);
+		mCamera->MoveBack(moveDistance);
 		break;
 	case KEY_TYPE::KEY_D:
-		mCamera->MoveRight(mMoveSpeed);
+		mCamera->MoveRight(moveDistance);
 		break;
 	case KEY_TYPE::KEY_Q:
-		mCamera->MoveDown(mMoveSpeed);
+		mCamera->MoveDown(moveDistance);
 		break;
 	case KEY_TYPE::KEY_E:
-		mCamera->MoveUp(mMoveSpeed);
+		mCamera->MoveUp(moveDistance);
 		break;
 	default:
 		break;
@@ -451,9 +460,11 @@ void LightApp::OnMouseMove(float xPos, float yPos, float zPos, float xSpeed, flo
 {
 	if (mMouseRightButtonDown)
 	{
-		const float turnRate = 0.00008f;
-		mCamera->TurnRight(xSpeed * turnRate);
-		mCamera->TurnUp(ySpeed * turnRate);
+		const float turnRate = 0.2f;
+		float deltaTime = (float)mGlobalTimer->deltaTime();
+		float turnAngle = turnRate * deltaTime;
+		mCamera->TurnRight(xSpeed * turnAngle);
+		mCamera->TurnUp(ySpeed * turnAngle);
 
 		if (zSpeed > 0.f)
 		{

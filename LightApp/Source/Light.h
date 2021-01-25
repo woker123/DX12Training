@@ -1,9 +1,12 @@
 #pragma once
 #include <DirectXMath.h>
 
-struct LightConstant
+#define MAX_LIGHT_COUNT 10
+
+struct LightInfo
 {
 	using float3 = DirectX::XMFLOAT3;
+
 	float3 LightPosition;
 	float FalloffStartRadius;
 	float3 LightIntensity;
@@ -11,12 +14,20 @@ struct LightConstant
 	float3 LightDirection;
 	float FalloffStartAngle;
 	float FalloffEndAngle;
+	UINT32 LightType;
+	UINT32 LightEnable;
+	float pad2;
+};
+
+struct LightConstant
+{
+	LightInfo lights[MAX_LIGHT_COUNT];
 };
 
 class Light
 {
 public:
-	virtual LightConstant GetLightConstant() = 0;
+	virtual LightInfo GetLightConstant() = 0;
 	virtual ~Light() {}
 };
 
@@ -30,11 +41,13 @@ public:
 	virtual ~DirectionalLight() {}
 	
 public:
-	virtual LightConstant GetLightConstant() override
+	virtual LightInfo GetLightConstant() override
 	{
-		LightConstant lightConst = {};
+		LightInfo lightConst = {};
 		lightConst.LightIntensity = mIntensity;
 		lightConst.LightDirection = mDirection;
+		lightConst.LightType = 0;
+		lightConst.LightEnable = 1;
 		return lightConst;
 	}
 
@@ -73,13 +86,15 @@ public:
 	virtual ~PointLight() {}
 
 public:
-	virtual LightConstant GetLightConstant() override
+	virtual LightInfo GetLightConstant() override
 	{
-		LightConstant lightConst = {};
+		LightInfo lightConst = {};
 		lightConst.LightIntensity = mIntensity;
 		lightConst.LightPosition = mPosition;
 		lightConst.FalloffStartRadius = mFalloffStartRadius;
 		lightConst.FalloffEndRaius = mFalloffEndRadius;
+		lightConst.LightType = 1;
+		lightConst.LightEnable = 1;
 		return lightConst;
 	}
 
@@ -144,9 +159,9 @@ public:
 	virtual ~SpotLight() {}
 
 public:
-	virtual LightConstant GetLightConstant() override
+	virtual LightInfo GetLightConstant() override
 	{
-		LightConstant lightConst = {};
+		LightInfo lightConst = {};
 		lightConst.LightIntensity = mIntensity;
 		lightConst.LightPosition = mPosition;
 		lightConst.LightDirection = mDirection;
@@ -154,6 +169,8 @@ public:
 		lightConst.FalloffEndRaius = mFalloffEndRadius;
 		lightConst.FalloffStartAngle = mFalloffStartAngle;
 		lightConst.FalloffEndAngle = mFalloffEndAngle;
+		lightConst.LightType = 2;
+		lightConst.LightEnable = 1;
 		return lightConst;
 	}
 

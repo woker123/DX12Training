@@ -5,7 +5,7 @@
 class Camera
 {
 public:
-	Camera(const DirectX::XMFLOAT3& location, float yaw, float pitch, float fov, float respect, float n = 0.001f, float f = 10000.f)
+	Camera(const DirectX::XMFLOAT3& location, float yaw, float pitch, float fov, float respect, float n = 0.01f, float f = 10000.f)
 		:mLocation(location), mYaw(yaw), mPitch(pitch), mFov(fov), mAspect(respect), mNear(n), mFar(f) 
 		,mViewMatrix(), mInvViewMatrix(), mProjectMatrix(), mInvProjectMatrix(), mViewProjectMatrix(), mInvViewProjectMatrix()
 	{
