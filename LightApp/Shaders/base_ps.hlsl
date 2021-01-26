@@ -34,7 +34,7 @@ cbuffer LightConstant : register(b2)
 
 float3 calcDirecionalLight(float3 originColor, float3 normal, int lightIndex);
 float3 calcPointLight(float3 originColor, float3 pixelPos, float3 normal, int lightIndex);
-float3 calcSpotLight(float3 originColor, float3 normal, int lightIndex);
+float3 calcSpotLight(float3 originColor, float3 pixelPos, float3 normal, LightInfo light);
 
 float4 main(PSIn pin) : SV_Target
 {
@@ -54,7 +54,7 @@ float4 main(PSIn pin) : SV_Target
                 break;
             case SPOT_LIGHT_TYPE:
                 if (lights[i].LightEnbale == TRUE)
-                    finalColor += calcSpotLight(originColor, normalize(pin.normal), i);
+                    finalColor += calcSpotLight(originColor, pin.position, normalize(pin.normal), lights[i]);
                 break;
             default:
                 break;
@@ -81,8 +81,27 @@ float3 calcPointLight(float3 originColor, float3 pixelPos, float3 normal, int li
         return lerp(intensity, float3(0.f, 0.f, 0.f), (lightDistance - lights[lightIndex].FalloffStartRadius) / (lights[lightIndex].FalloffEndRadius - lights[lightIndex].FalloffStartRadius));
 }
 
-float3 calcSpotLight(float3 originColor, float3 normal, int lightIndex)
+float3 calcSpotLight(float3 originColor, float3 pixelPos, float3 normal, LightInfo light)
 {
-    return float3(0.f, 0.f, 0.f);
-
+    float lightDistance = length(light.LightPosition - pixelPos);
+    float lightAttenu = 1.f;
+    if(lightDistance > light.FalloffEndRadius)
+    {
+        lightAttenu = 0.f;
+    }
+    else if(lightDistance > light.FalloffStartRadius)
+    {
+        lightAttenu *= lerp(1.f, 0.f, (lightDistance - light.FalloffStartRadius) / (light.FalloffEndRadius - light.FalloffStartRadius));
+    }
+    
+    float3 lightVec = normalize(light.LightPosition - pixelPos);
+    float fallStartCos = cos(radians(light.FalloffStartAngle));
+    float fallEndCos = cos(radians(light.FalloffEndAngle));
+    float lightCos = dot(-lightVec, normalize(light.LightDirection));
+    if(lightCos < fallEndCos)
+        lightAttenu *= 0.f;
+    else if(lightCos < fallStartCos)
+        lightAttenu *= lerp(1.f, 0.f, (fallStartCos - lightCos) / (fallStartCos - fallEndCos));
+    
+    return originColor * clamp(dot(lightVec, normal), 0.f, 1.f) * light.LightIntensity * lightAttenu;
 }

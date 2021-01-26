@@ -286,12 +286,19 @@ bool LightApp::BuildLights()
 {
 	//mDirectionalLights.push_back(DirectionalLight({1.f, 1.f, 1.f}, {-1.f, -1.f, -1.f}));
 	mPointLights.push_back(PointLight({1.f, 1.f, 1.f}, {0.f, 10.f, 0.f}, 0.1f, 30.f));
-	mSpotLights.push_back(SpotLight({ 0.f, 1.f, 0.f }, { 0.f, 10.f, 0.f }, { -1.f, - 1.f, -1.f }, 0.1f, 100.f, 5.f, 45.f));
+	mSpotLights.push_back(SpotLight({ 1.f, 1.f, 1.f }, { 0.f, 20.f, 0.f }, { 0.f, - 1.f, 0.f }, 0.f, 100.f, 0.f, 20.f));
 	return true;
 }
 
 void LightApp::UpdateLightCB()
 {
+	if (!mSpotLights.empty())
+	{
+		auto& spotLight = mSpotLights[0];
+		spotLight.SetPosition(mCamera->GetLocation());
+		spotLight.SetDirection(mCamera->GetForwardVector());
+	}
+
 	LightConstant lightConst = {};
 	int numLight = 0;
 	for (int i = 0; i < (int)mDirectionalLights.size(); ++i, ++numLight)
