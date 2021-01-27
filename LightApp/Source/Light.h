@@ -1,5 +1,6 @@
 #pragma once
 #include <DirectXMath.h>
+#include "MathHelper.h"
 
 #define MAX_LIGHT_COUNT 10
 
@@ -36,7 +37,7 @@ class DirectionalLight : public Light
 	using float3 = DirectX::XMFLOAT3;
 public:
 	DirectionalLight(const float3& intensity, const float3& direction)
-		:mIntensity(intensity), mDirection(direction)
+		:mIntensity(intensity), mDirection(MathHelper::Normalize(direction))
 	{}
 	virtual ~DirectionalLight() {}
 	
@@ -151,7 +152,7 @@ class SpotLight : public Light
 public:
 	SpotLight(const float3& intensity, const float3& position, const float3& direction, 
 		float falloffStartRadius, float falloffEndRadius, float falloffStartAngle, float falloffEndAngle)
-		:mIntensity(intensity), mPosition(position), mDirection(direction)
+		:mIntensity(intensity), mPosition(position), mDirection(MathHelper::Normalize(direction))
 		,mFalloffStartRaduis(falloffStartRadius), mFalloffEndRadius(falloffEndRadius)
 		,mFalloffStartAngle(falloffStartAngle), mFalloffEndAngle(falloffEndAngle)
 	{

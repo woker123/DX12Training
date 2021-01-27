@@ -110,6 +110,20 @@ public:
 		return result; 
 	}
 
+	static float Length(const DirectX::XMFLOAT3& v)
+	{
+		DirectX::XMFLOAT3 result;
+		DirectX::XMStoreFloat3(&result, DirectX::XMVector3Length(DirectX::XMLoadFloat3(&v)));
+		return result.x;
+	}
+
+	static float Dot(const DirectX::XMFLOAT3& v1, const DirectX::XMFLOAT3& v2)
+	{
+		DirectX::XMFLOAT3 result;
+		DirectX::XMStoreFloat3(&result, DirectX::XMVector3Dot(DirectX::XMLoadFloat3(&v1), DirectX::XMLoadFloat3(&v2)));
+		return result.x;
+	}
+
     static DirectX::XMVECTOR RandUnitVec3();
     static DirectX::XMVECTOR RandHemisphereUnitVec3(DirectX::XMVECTOR n);
 
@@ -132,3 +146,14 @@ FLOAT3OPFUNCDESC(+)
 FLOAT3OPFUNCDESC(-)
 FLOAT3OPFUNCDESC(*)
 FLOAT3OPFUNCDESC(/)
+
+inline const DirectX::XMFLOAT3 operator*(float lh, const DirectX::XMFLOAT3& rh)
+{
+	return DirectX::XMFLOAT3(lh, lh, lh) * rh;
+}
+
+inline const DirectX::XMFLOAT3 operator*(const DirectX::XMFLOAT3& lh, float rh)
+{
+	return lh * DirectX::XMFLOAT3(rh, rh, rh);
+}
+

@@ -294,9 +294,27 @@ void LightApp::UpdateLightCB()
 {
 	if (!mSpotLights.empty())
 	{
+		float lerpSpeed = 1.5f;
+		float tolerence = 0.01f;
 		auto& spotLight = mSpotLights[0];
+		DirectX::XMFLOAT3 lightDir = spotLight.GetDirection();
+		DirectX::XMFLOAT3 cameraDir = mCamera->GetForwardVector();
+		DirectX::XMFLOAT3 lerpDir = cameraDir - lightDir;
+		if (MathHelper::Length(lerpDir) > tolerence)
+		{
+			lerpDir = MathHelper::Normalize(lerpDir);
+			spotLight.SetPosition(mCamera->GetLocation());
+			DirectX::XMFLOAT3 nextDir = lightDir + lerpSpeed * (float)mGlobalTimer->deltaTime() * lerpDir;
+			if (MathHelper::Dot(cameraDir - nextDir, lerpDir) < 0)
+			{
+				spotLight.SetDirection(cameraDir);
+			}
+			else
+			{
+				spotLight.SetDirection(nextDir);
+			}		
+		}
 		spotLight.SetPosition(mCamera->GetLocation());
-		spotLight.SetDirection(mCamera->GetForwardVector());
 	}
 
 	LightConstant lightConst = {};
