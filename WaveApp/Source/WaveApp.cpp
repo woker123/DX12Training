@@ -85,9 +85,9 @@ void WaveApp::OnMouseMove(float xPos, float yPos, float zPos, float xSpeed, floa
 {
 	if (mMouseRightButtonDown)
 	{
-		const float turnRate = 0.0001f;
-		mCamera->TurnRight(xSpeed * turnRate);
-		mCamera->TurnUp(ySpeed * turnRate);
+		const float turnRate = 0.5;
+		mCamera->TurnRight(xSpeed * turnRate * (float)mGlobalTimer->deltaTime());
+		mCamera->TurnUp(ySpeed * turnRate * (float)mGlobalTimer->deltaTime());
 
 		if (zSpeed > 0.f)
 		{
