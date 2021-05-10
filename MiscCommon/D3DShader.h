@@ -11,7 +11,7 @@
 class D3DShader
 {
 public:
-	D3DShader(LPCWSTR fileName, LPCSTR target, D3D_SHADER_MACRO* macros)
+	D3DShader(LPCWSTR fileName, LPCSTR target, D3D_SHADER_MACRO* macros = nullptr)
 	{
 		bool D3D12Shader_Construct = InitializeShader(fileName, target, macros);
 		assert(D3D12Shader_Construct);

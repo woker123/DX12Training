@@ -1,0 +1,13 @@
+﻿  compilation object save succeeded; see D:\D3D12Proj\DX12Training\LightApp\base_ps.cso
+  compilation object save succeeded; see D:\D3D12Proj\DX12Training\LightApp\base_vs.cso
+  D3DApp.cpp
+  D3DInput.cpp
+  D3DUtil.cpp
+  GameTimer.cpp
+  GeometryGenerator.cpp
+  GraphicWindow.cpp
+  MathHelper.cpp
+  LightApp.cpp
+  WinMain.cpp
+  正在生成代码...
+  LightApp.vcxproj -> D:\D3D12Proj\DX12Training\LightApp\05-LightApp.exe

@@ -483,9 +483,9 @@ void ShapeApp::OnMouseMove(float xPos, float yPos, float zPos, float xSpeed, flo
 {
 	if (mMouseRightButtonDown)
 	{
-		const float turnRate = 0.00008f;
-		mCamera->TurnRight(xSpeed * turnRate);
-		mCamera->TurnUp(ySpeed * turnRate);
+		float turnRate = 0.5;
+		mCamera->TurnRight(xSpeed * (float)mGlobalTimer->deltaTime() * turnRate);
+		mCamera->TurnUp(ySpeed * (float)mGlobalTimer->deltaTime() * turnRate);
 
 		if (zSpeed > 0.f)
 		{
